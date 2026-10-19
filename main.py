@@ -2,7 +2,7 @@ import time
 from dotenv import load_dotenv
 from playwright.sync_api import sync_playwright
 from functions.a_open_brouser import open_brouser
-from functions.general import click_text_button, extraer_ofertas, log
+from functions.general import click_text_button, extraer_ofertas, log, notificar
 from winotify import Notification
 from functions.ia_google import analizar_pagina, arrancar_ia, elegir_oferta
 
@@ -23,21 +23,14 @@ PERFIL = """Ingeniero de Software Industrial | OT + IT | Industria 4.0
                OCR + NLP para procesamiento documental 
                Extracción y normalización automática de datos"""
 
-def notificar(titulo, mensaje):
-    aviso = Notification(
-        app_id="Job Search Engine",
-        title=titulo,
-        msg=mensaje,
-        duration="short"
-    )
-    aviso.show()
 
-notificar(1, 2)
+
+
 
 
 def main():
     # Inicializar Gemini una sola vez
-    ia = arrancar_ia()
+    # ia = arrancar_ia()
     
     with sync_playwright() as p:
         context, page = open_brouser(p)
@@ -49,13 +42,20 @@ def main():
             text = click_text_button(page, "Última semana")
             text = click_text_button(page, "Mostrar resultados")
             text = click_text_button(page, "Solicitud sencilla")
+            time.sleep(11)
 
-            decision = analizar_pagina(ia, page, PERFIL)
+            # decision = analizar_pagina(ia, page, PERFIL)
 
             ofertas = extraer_ofertas(page)
             print(ofertas)
-            decision = elegir_oferta(ia, ofertas, PERFIL)
-            print(print(decision))
+            time.sleep(11)
+            ofertas = extraer_ofertas(page)
+            print(ofertas)
+            
+            notificar("", str(ofertas))
+
+            # decision = elegir_oferta(ia, ofertas, PERFIL)
+            # print(print(decision))
 
             while True:
                 page.wait_for_timeout(1000)

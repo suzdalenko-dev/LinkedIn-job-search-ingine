@@ -1,5 +1,7 @@
 import time
 
+from winotify import Notification
+
 def click_text_button(page, text):
     elemento = page.get_by_text(text, exact=True).first
 
@@ -79,3 +81,14 @@ def seleccionar_oferta(page, titulo):
     except Exception as error:
         print(f"No se pudo seleccionar la oferta: {error}", flush=True)
         return False
+
+
+
+def notificar(titulo, mensaje):
+    aviso = Notification(
+        app_id="Job Search Engine",
+        title=titulo,
+        msg=mensaje,
+        duration="short"
+    )
+    aviso.show()
