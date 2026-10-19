@@ -7,17 +7,17 @@ def open_brouser():
     print("Iniciando Playwright...", flush=True)
 
     perfil = Path(__file__).with_name("perfil_linkedin")
+    p = sync_playwright()
 
-    with sync_playwright() as p:
-        print("Abriendo Chromium...", flush=True)
+    print("Abriendo Chromium...", flush=True)
 
-        context = p.chromium.launch_persistent_context(
+    context = p.chromium.launch_persistent_context(
             user_data_dir=str(perfil),
             headless=False,
             viewport={"width": 1111, "height": 900},
-        )
+    )
 
-        try:
+    try:
             page = (
                 context.pages[0]
                 if context.pages
@@ -42,7 +42,7 @@ def open_brouser():
             return page
 
 
-        finally:
+    finally:
             print("Cerrando navegador...", flush=True)
             # context.close()
 
