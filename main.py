@@ -55,7 +55,7 @@ def main():
             ofertas = extraer_ofertas(page)
             print(ofertas)
             decision = elegir_oferta(ia, ofertas, PERFIL)
-            print(print(ofertas))
+            print(print(decision))
 
             while True:
                 page.wait_for_timeout(1000)
