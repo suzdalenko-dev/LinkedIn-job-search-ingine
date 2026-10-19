@@ -74,3 +74,48 @@ def analizar_pagina(client, page, perfil):
 
     print("Decisión de Gemini:", resultado, flush=True)
     return resultado
+
+
+
+
+
+
+
+def elegir_oferta(client, ofertas, perfil):
+    if not ofertas:
+        return None
+
+    instrucciones = f"""
+        Eres un asistente de búsqueda de empleo.
+
+        PERFIL:
+        {perfil}
+
+        OFERTAS DISPONIBLES:
+        {json.dumps(ofertas, ensure_ascii=False)}
+
+        Selecciona la oferta más adecuada según el perfil.
+        No inventes información que no aparezca en los datos.
+
+        Devuelve JSON con esta estructura:
+        {{
+          "indice": 0,
+          "titulo": "Título exacto de la oferta",
+          "motivo": "Por qué encaja con el perfil"
+        }}
+
+        El índice debe corresponder al campo indice de una oferta.
+        Si ninguna encaja razonablemente, devuelve indice -1.
+    """
+
+    respuesta = client.models.generate_content(
+        model=os.getenv("GEMINI_MODEL", "gemini-3.8-flash"),
+        contents=instrucciones,
+        config={
+            "response_mime_type": "application/json"
+        },
+    )
+
+    decision = json.loads(respuesta.text)
+    print("Oferta elegida por Gemini:", decision, flush=True)
+    return decision
