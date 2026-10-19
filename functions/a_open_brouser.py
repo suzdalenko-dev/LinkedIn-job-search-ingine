@@ -18,7 +18,7 @@ def open_brouser():
         )
 
         try:
-            PAGE = (
+            page = (
                 context.pages[0]
                 if context.pages
                 else context.new_page()
@@ -27,7 +27,7 @@ def open_brouser():
             print("Navegador abierto.", flush=True)
             print("Entrando en LinkedIn Jobs...", flush=True)
 
-            PAGE.goto(
+            page.goto(
                 "https://www.linkedin.com/jobs/",
                 wait_until="domcontentloaded",
                 timeout=60000,
@@ -36,11 +36,11 @@ def open_brouser():
             
 
             print("Página cargada.", flush=True)
-            print(f"URL: {PAGE.url}", flush=True)
-            print(f"Título: {PAGE.title()}", flush=True)
+            print(f"URL: {page.url}", flush=True)
+            print(f"Título: {page.title()}", flush=True)
 
-            while True:
-                PAGE.wait_for_timeout(1000)
+            return page
+
 
         finally:
             print("Cerrando navegador...", flush=True)
