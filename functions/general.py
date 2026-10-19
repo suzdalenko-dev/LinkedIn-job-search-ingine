@@ -1,8 +1,15 @@
 def click_text_button(page, text):
-    boton = page.get_by_text(text, exact=True).first
-    boton.wait_for(state="visible", timeout=15000)
-    boton.click()
-    print("Pulsado «Mostrar todo». Esperando a que carguen las ofertas...", flush=True)
-    page.wait_for_load_state("domcontentloaded")
-    page.wait_for_timeout(2000)
-    print(f"URL actual: {page.url}", flush=True)
+    if page is None:
+        raise ValueError("La página de Playwright es None.")
+
+    try:
+        boton = page.get_by_role("button", name=text, exact=True).first
+        boton.wait_for(state="visible", timeout=10000)
+        boton.click(timeout=10000)
+
+        print(f"Botón pulsado: {text}", flush=True)
+        return True
+
+    except Exception:
+        print(f"No se encontró un botón visible: {text}", flush=True)
+        return False
