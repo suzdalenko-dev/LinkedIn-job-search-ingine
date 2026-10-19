@@ -65,3 +65,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+'''
+ahora entonces la idea que la ia tiene que tener herrramientas como consular el contenido de la pagina, quizas a la vez hacer la foto y la idea es primero clicar ene el listado la ofertas en una de ellas que tiene sentido para mi uso, despues la pagina cambia y hay que clicar en solicitud sencilla y despues y rellenar los datos que hagan falta y despues puede ser que hace falta hacer el scroll para descubrir el boton de enviar solicitud y pasar a elegir la otra oferta de trabajo del listado general a la derecha
+'''
