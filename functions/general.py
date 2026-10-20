@@ -26,27 +26,102 @@ def log(text, page):
 
 
 
+
 def extraer_ofertas(page):
-    """Extrae las ofertas visibles del listado de LinkedIn."""
+    """Extrae las ofertas de LinkedIn usando el DOM actual
+    y mantiene compatibilidad con las tarjetas antiguas.
+    """
 
-    tarjetas = page.locator(".job-card-container")
+    selector_nuevo = (
+        '[role="button"]'
+        '[componentkey^="job-card-component-ref-"]'
+    )
+
+    # Esperar a que LinkedIn muestre alguna tarjeta.
+    try:
+        page.locator(selector_nuevo).first.wait_for(
+            state="attached",
+            timeout=10000
+        )
+    except Exception:
+        pass
+
+    # Primero buscamos las tarjetas de la estructura nueva.
+    tarjetas = page.locator(
+        f'[data-testid="lazy-column"] {selector_nuevo}'
+    )
+
+    if tarjetas.count() == 0:
+        tarjetas = page.locator(selector_nuevo)
+
+    estructura_nueva = tarjetas.count() > 0
+
+    # Compatibilidad con la estructura antigua.
+    if not estructura_nueva:
+        tarjetas = page.locator(".job-card-container")
+
+    cantidad = tarjetas.count()
     ofertas = []
+    errores = 0
 
-    for i in range(tarjetas.count()):
+    for i in range(cantidad):
         tarjeta = tarjetas.nth(i)
 
         try:
-            titulo = tarjeta.locator(
-                ".job-card-list__title"
-            ).inner_text(timeout=2000).strip()
+            if estructura_nueva:
+                parrafos = tarjeta.locator("p")
 
-            empresa = tarjeta.locator(
-                ".artdeco-entity-lockup__subtitle"
-            ).inner_text(timeout=2000).strip()
+                # En el HTML observado:
+                # p[0] = título
+                # p[1] = empresa
+                # p[2] = ubicación
+                if parrafos.count() < 3:
+                    print(
+                        f"Tarjeta {i}: solo tiene "
+                        f"{parrafos.count()} párrafos",
+                        flush=True
+                    )
+                    errores += 1
+                    continue
 
-            ubicacion = tarjeta.locator(
-                ".job-card-container__metadata-item"
-            ).first.inner_text(timeout=2000).strip()
+                # El título aparece duplicado en el HTML.
+                # Tomamos solo el primer span para evitarlo.
+                spans = parrafos.nth(0).locator("span")
+
+                if spans.count() > 0:
+                    titulo = spans.first.inner_text(
+                        timeout=3000
+                    ).strip()
+                else:
+                    titulo = parrafos.nth(0).inner_text(
+                        timeout=3000
+                    ).strip()
+
+                empresa = parrafos.nth(1).inner_text(
+                    timeout=3000
+                ).strip()
+
+                ubicacion = parrafos.nth(2).inner_text(
+                    timeout=3000
+                ).strip()
+
+            else:
+                # Selectores de la estructura antigua.
+                titulo = tarjeta.locator(
+                    ".job-card-list__title"
+                ).inner_text(timeout=3000).strip()
+
+                empresa = tarjeta.locator(
+                    ".artdeco-entity-lockup__subtitle"
+                ).inner_text(timeout=3000).strip()
+
+                ubicacion = tarjeta.locator(
+                    ".job-card-container__metadata-item"
+                ).first.inner_text(timeout=3000).strip()
+
+            if not titulo:
+                errores += 1
+                continue
 
             ofertas.append({
                 "indice": i,
@@ -55,12 +130,30 @@ def extraer_ofertas(page):
                 "ubicacion": ubicacion,
             })
 
-        except Exception:
-            # Ignorar tarjetas incompletas o con estructura distinta.
-            continue
+        except Exception as error:
+            errores += 1
+            print(
+                f"Error al extraer la tarjeta {i}: {error}",
+                flush=True
+            )
 
-    print(f"Ofertas extraídas: {len(ofertas)}", flush=True)
+    print(
+        f"Tarjetas detectadas: {cantidad}",
+        flush=True
+    )
+    print(
+        f"Ofertas extraídas: {len(ofertas)}",
+        flush=True
+    )
+    print(
+        f"Tarjetas omitidas: {errores}",
+        flush=True
+    )
+
     return ofertas
+
+
+
 
 
 def seleccionar_oferta(page, titulo):
