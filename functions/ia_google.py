@@ -133,19 +133,16 @@ Responde en español.
 """
 
     respuesta = client.chat.complete(
-        model=os.getenv(
-            "MISTRAL_MODEL",
-            "mistral-small-latest"
-        ),
+        model=os.getenv("MISTRAL_MODEL", "mistral-small-2603"),
         messages=[
-            {
-                "role": "user",
-                "content": instrucciones
-            }
-        ],
-        response_format={"type": "json_object"},
-        temperature=0.2
-    )
+        {
+            "role": "user",
+            "content": instrucciones
+        }
+    ],
+    response_format={"type": "json_object"},
+    temperature=0.2
+)
 
     contenido = respuesta.choices[0].message.content
 

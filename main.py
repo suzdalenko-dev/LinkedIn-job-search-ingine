@@ -29,7 +29,6 @@ PERFIL = """Ingeniero de Software Industrial | OT + IT | Industria 4.0
 
 
 def main():
-    # Inicializar Gemini una sola vez
     ia = arrancar_ia()
     
     with sync_playwright() as p:
