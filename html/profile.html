@@ -1,0 +1,934 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Perfil profesional | Simulación local</title>
+    <style>
+        :root {
+            --blue: #0a66c2;
+            --dark: #191919;
+            --muted: #666;
+            --bg: #f3f2ef;
+            --line: #ddd;
+            --green: #057642
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--dark);
+            font: 14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif
+        }
+
+        a {
+            color: var(--blue);
+            text-decoration: none
+        }
+
+        button,
+        input {
+            font: inherit
+        }
+
+        button {
+            cursor: pointer
+        }
+
+        .top {
+            height: 54px;
+            background: #fff;
+            border-bottom: 1px solid #ddd;
+            position: sticky;
+            top: 0;
+            z-index: 5
+        }
+
+        .nav {
+            max-width: 1128px;
+            height: 100%;
+            margin: auto;
+            padding: 0 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+
+        .brand {
+            font-size: 26px;
+            font-weight: 750;
+            letter-spacing: -1.5px;
+            color: var(--blue);
+            white-space: nowrap
+        }
+
+        .brand b {
+            background: var(--blue);
+            color: #fff;
+            border-radius: 3px;
+            padding: 0 3px
+        }
+
+        .searchbox {
+            position: relative
+        }
+
+        .searchbox:before {
+            content: "⌕";
+            position: absolute;
+            left: 12px;
+            top: 0;
+            font-size: 23px
+        }
+
+        .search {
+            height: 34px;
+            width: 260px;
+            border: 0;
+            border-radius: 4px;
+            background: #edf3f8;
+            padding: 0 10px 0 36px;
+            outline: 0
+        }
+
+        .navitems {
+            margin-left: auto;
+            height: 100%;
+            display: flex
+        }
+
+        .navitem {
+            min-width: 61px;
+            padding: 6px 7px 3px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #555;
+            font-size: 11px;
+            border-bottom: 2px solid transparent;
+            white-space: nowrap
+        }
+
+        .navitem .ico {
+            font-size: 20px;
+            line-height: 23px
+        }
+
+        .navitem.active {
+            border-bottom-color: #191919;
+            color: #191919
+        }
+
+        .navitem.premium {
+            max-width: 92px;
+            white-space: normal;
+            text-align: center;
+            color: #8a5a00
+        }
+
+        .miniavatar {
+            width: 23px;
+            height: 23px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: #dce7ed
+        }
+
+        .page {
+            max-width: 1128px;
+            margin: 24px auto 40px;
+            padding: 0 14px;
+            display: grid;
+            grid-template-columns: minmax(0, 804px) 300px;
+            gap: 24px;
+            align-items: start
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 0 1px #00000012;
+            overflow: hidden;
+            margin-bottom: 8px
+        }
+
+        .cover {
+            height: 190px;
+            background-image: url("/html/ski.jpg");
+            background-size: cover;
+            background-position: center 48%;
+            background-repeat: no-repeat;
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .cover::before,
+        .cover::after {
+            content: none;
+        }
+
+        .cover:before,
+        .cover:after {
+            content: "";
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border: 32px solid #ffffff30;
+            border-radius: 50%;
+            right: 8%;
+            top: -190px
+        }
+
+        .cover:after {
+            width: 190px;
+            height: 190px;
+            right: 42%;
+            top: 85px;
+            border-width: 22px
+        }
+
+        .localtag {
+            position: absolute;
+            right: 12px;
+            top: 12px;
+            background: #ffffffcc;
+            padding: 4px 7px;
+            border-radius: 4px;
+            font-size: 10px;
+            letter-spacing: .5px;
+            color: #555
+        }
+
+        .profile {
+            padding: 0 24px 22px;
+            position: relative
+        }
+
+        .avatar {
+            width: 152px;
+            height: 152px;
+            border-radius: 50%;
+            border: 4px solid white;
+            overflow: hidden;
+            margin-top: -76px;
+            margin-bottom: 13px;
+            background: #dce7ed;
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .avatar:after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 20%;
+            width: 60%;
+            height: 36%;
+            border-radius: 50% 50% 0 0;
+            background: #8ba8bb99
+        }
+
+        .avatar span {
+            position: relative;
+            z-index: 1;
+            margin-top: -10px
+        }
+
+        .edit {
+            position: absolute;
+            right: 20px;
+            top: 14px;
+            background: transparent;
+            border: 0;
+            color: #666;
+            font-size: 22px
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            line-height: 1.25;
+            margin: 0 0 5px
+        }
+
+        .headline {
+            font-size: 16px;
+            margin: 0 0 7px;
+            max-width: 570px
+        }
+
+        .muted {
+            color: var(--muted)
+        }
+
+        .meta {
+            font-size: 13px;
+            color: var(--muted);
+            margin: 5px 0
+        }
+
+        .buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 16px
+        }
+
+        .btn {
+            border: 1px solid var(--blue);
+            border-radius: 22px;
+            padding: 7px 17px;
+            font-weight: 600;
+            background: white;
+            color: var(--blue)
+        }
+
+        .btn.primary {
+            background: var(--blue);
+            color: white
+        }
+
+        .btn.gray {
+            border-color: #666;
+            color: #555
+        }
+
+        .btn:hover {
+            background: #eaf4fd
+        }
+
+        .btn.primary:hover {
+            background: #004182
+        }
+
+        .status {
+            margin-top: 18px;
+            border: 1px solid #d6e5f2;
+            background: #eaf4fd;
+            border-radius: 7px;
+            padding: 12px 14px
+        }
+
+        .status strong {
+            display: block;
+            font-size: 15px;
+            margin-bottom: 3px
+        }
+
+        .section {
+            padding: 20px 24px
+        }
+
+        .section h2 {
+            font-size: 20px;
+            font-weight: 600;
+            line-height: 1.3;
+            margin: 0 0 14px
+        }
+
+        .section p {
+            margin: 0 0 10px
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px
+        }
+
+        .stat {
+            display: flex;
+            gap: 10px
+        }
+
+        .staticon {
+            font-size: 20px;
+            color: #666
+        }
+
+        .stat strong {
+            display: block;
+            font-size: 16px
+        }
+
+        .stat small {
+            display: block;
+            color: #666;
+            font-size: 12px
+        }
+
+        .sectionhead {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin: 12px 0 16px
+        }
+
+        .pill {
+            border: 1px solid #777;
+            border-radius: 18px;
+            padding: 5px 13px;
+            background: white;
+            color: #555;
+            font-weight: 600;
+            font-size: 13px
+        }
+
+        .pill.selected {
+            background: var(--green);
+            border-color: var(--green);
+            color: white
+        }
+
+        .post {
+            border-top: 1px solid var(--line);
+            padding-top: 14px;
+            margin-top: 12px
+        }
+
+        .posthead {
+            display: flex;
+            gap: 10px;
+            align-items: center
+        }
+
+        .postavatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: #dce7ed;
+            display: grid;
+            place-items: center;
+            color: #294c62;
+            font-weight: 700
+        }
+
+        .postname {
+            font-weight: 600
+        }
+
+        .post p {
+            margin: 12px 0
+        }
+
+        .preview {
+            height: 112px;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            background: linear-gradient(135deg, #f6f8fa, #e4edf3);
+            display: grid;
+            place-items: center;
+            color: #476273;
+            font-size: 18px;
+            font-weight: 600
+        }
+
+        .engagement {
+            display: flex;
+            justify-content: space-between;
+            color: #666;
+            font-size: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--line)
+        }
+
+        .postactions {
+            display: flex;
+            justify-content: space-around;
+            padding-top: 8px
+        }
+
+        .postactions button {
+            border: 0;
+            background: none;
+            color: #666;
+            padding: 8px;
+            font-weight: 600
+        }
+
+        .exp {
+            display: grid;
+            grid-template-columns: 48px 1fr;
+            gap: 12px;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--line)
+        }
+
+        .exp:last-child {
+            border: 0;
+            padding-bottom: 0
+        }
+
+        .logo {
+            width: 44px;
+            height: 44px;
+            border-radius: 4px;
+            background: #e7edf0;
+            display: grid;
+            place-items: center;
+            font-weight: 700;
+            color: #3c5969
+        }
+
+        .exp h3 {
+            font-size: 16px;
+            margin: 0 0 3px;
+            font-weight: 600
+        }
+
+        .exp p {
+            margin: 2px 0
+        }
+
+        .edu {
+            display: flex;
+            gap: 12px
+        }
+
+        .edulogo {
+            width: 44px;
+            height: 44px;
+            background: #dce9f4;
+            border-radius: 4px;
+            display: grid;
+            place-items: center;
+            font-weight: 700;
+            color: #315a7c
+        }
+
+        .side {
+            padding: 16px;
+            margin-bottom: 8px
+        }
+
+        .side h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0 0 12px
+        }
+
+        .person {
+            padding: 10px 0;
+            border-top: 1px solid var(--line);
+            display: grid;
+            grid-template-columns: 38px 1fr;
+            gap: 9px
+        }
+
+        .person:first-of-type {
+            border-top: 0
+        }
+
+        .sideavatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #e0e8ed;
+            display: grid;
+            place-items: center;
+            color: #486071
+        }
+
+        .person strong {
+            display: block;
+            font-size: 13px;
+            line-height: 1.3
+        }
+
+        .person small {
+            display: block;
+            color: #666;
+            font-size: 12px;
+            margin: 3px 0 7px
+        }
+
+        .sidebtn {
+            border: 1px solid #777;
+            border-radius: 18px;
+            background: white;
+            color: #555;
+            padding: 4px 12px;
+            font-weight: 600;
+            font-size: 12px
+        }
+
+        .promo {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            text-align: center;
+            padding: 18px 16px;
+            margin-bottom: 8px
+        }
+
+        .ad {
+            font-size: 10px;
+            color: #777;
+            text-align: right;
+            margin-bottom: 10px
+        }
+
+        .promo h3 {
+            font-size: 16px;
+            margin: 0 0 8px
+        }
+
+        .promo p {
+            font-size: 12px;
+            color: #666;
+            margin: 0 0 12px
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #222;
+            color: #fff;
+            padding: 12px 18px;
+            border-radius: 7px;
+            z-index: 20;
+            display: none;
+            max-width: 90%;
+            text-align: center
+        }
+
+        footer {
+            max-width: 1128px;
+            margin: 0 auto 30px;
+            padding: 0 14px;
+            text-align: center;
+            color: #666;
+            font-size: 12px
+        }
+
+        @media(max-width:1000px) {
+            .page {
+                grid-template-columns: minmax(0, 1fr) 270px;
+                gap: 14px
+            }
+
+            .navitem {
+                min-width: 52px;
+                padding-left: 4px;
+                padding-right: 4px
+            }
+
+            .search {
+                width: 180px
+            }
+
+            .premium {
+                display: none !important
+            }
+        }
+
+        @media(max-width:760px) {
+            .nav {
+                gap: 8px
+            }
+
+            .searchbox {
+                flex: 1
+            }
+
+            .search {
+                width: 100%
+            }
+
+            .navitem:nth-child(n+4) {
+                display: none
+            }
+
+            .navitem {
+                min-width: 42px
+            }
+
+            .brand {
+                font-size: 23px
+            }
+
+            .page {
+                display: block;
+                margin-top: 12px
+            }
+
+            .page aside {
+                display: none
+            }
+
+            .profile {
+                padding: 0 16px 18px
+            }
+
+            .avatar {
+                height: 112px;
+                width: 112px;
+                font-size: 40px;
+                margin-top: -56px
+            }
+
+            .section {
+                padding: 18px 16px
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+                gap: 12px
+            }
+
+            .headline {
+                font-size: 15px
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="top">
+        <nav class="nav" aria-label="Navegación principal">
+            <a class="brand" href="#inicio" aria-label="Inicio">Linked<b>On</b></a>
+            <div class="searchbox"><input class="search" id="search" placeholder="Buscar"
+                    aria-label="Buscar en la demostración"></div>
+            <div class="navitems">
+                <a class="navitem active" href="#inicio"><span class="ico">⌂</span>Inicio</a><a class="navitem"
+                    href="#red"><span class="ico">♧</span>Mi red</a><a class="navitem" href="#empleos"><span
+                        class="ico">▣</span>Empleos</a><a class="navitem" href="#mensajes"><span
+                        class="ico">▤</span>Mensajes</a><a class="navitem" href="#notificaciones"><span
+                        class="ico">♧</span>Notificaciones</a><a class="navitem" href="#yo"><span
+                        class="miniavatar">AS</span>Yo ▾</a><a class="navitem premium" href="#premium">Prueba
+                    Premium</a>
+            </div>
+        </nav>
+    </header>
+    <div class="page" id="inicio">
+        <main>
+            <section class="card">
+                <div class="cover"><span class="localtag">SIMULACIÓN LOCAL</span></div>
+                <div class="profile">
+                    <button class="edit" data-msg="Opciones de edición de perfil simuladas."
+                        aria-label="Editar">✎</button>
+                    <div class="avatar">
+                        <img src="/html/profile.jpg" alt="Suzdalenko">
+                    </div>
+                    <h1>Alexey Suzdalenko <span class="muted" style="font-size:16px;font-weight:400">· Tú</span></h1>
+                    <p class="headline">Industrial Data Engineer | Industry 4.0 &amp; IIoT | OPC UA, MQTT, SQL, Python,
+                        .NET, Power BI</p>
+                    <p class="meta">España · <a href="#contacto"
+                            data-msg="Información de contacto ficticia en esta maqueta.">Información de contacto</a></p>
+                    <p class="meta">4.275 seguidores · Más de 500 contactos</p>
+                    <div class="buttons"><button class="btn primary"
+                            data-msg="La función de interés laboral es solo una demostración.">Tengo interés
+                            en…</button><button class="btn" data-msg="Sección de perfil de ejemplo.">Añadir
+                            sección</button><button class="btn gray"
+                            data-msg="Herramientas de perfil simuladas.">Mejorar perfil</button></div>
+                    <div class="status"><strong>En busca de empleo</strong><span>Autonomía de Cantabria, España y
+                            alrededores · Preferencia híbrido o remoto</span></div>
+                </div>
+            </section>
+            <section class="card section">
+                <h2>Análisis</h2>
+                <p class="muted" style="font-size:12px">Solo para ti</p>
+                <div class="stats">
+                    <div class="stat"><span class="staticon">◉</span>
+                        <div><strong>155 visualizaciones del perfil</strong><small>Descubre quién ha visto tu
+                                perfil.</small></div>
+                    </div>
+                    <div class="stat"><span class="staticon">▤</span>
+                        <div><strong>60 impresiones de la publicación</strong><small>Mira quién interactúa con tus
+                                publicaciones.</small></div>
+                    </div>
+                    <div class="stat"><span class="staticon">⌕</span>
+                        <div><strong>6 apariciones en búsquedas</strong><small>Mira con qué frecuencia apareces.</small>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="card section">
+                <h2>Acerca de</h2>
+                <p><strong>Industrial Data Engineer | Industry 4.0 | Cantabria – Bilbao/Zamudio (híbrido)</strong></p>
+                <p>Especializado en integración de máquinas en planta alimentaria y cálculo de OEE y KPIs en tiempo
+                    real.</p>
+                <p>Desarrollo aplicaciones industriales end-to-end: captura de datos desde PLC mediante OPC UA, MQTT y
+                    TCP sockets; backend y APIs; bases de datos; visualización de indicadores e informes.</p>
+                <p>Experiencia con Python/Django, PHP (Laravel/Symfony), C#/.NET, Java/Spring Boot, JavaScript/Vue.js,
+                    SQL Server, PostgreSQL, MySQL, Power BI/DAX y generación de informes PDF/Excel.</p>
+            </section>
+            <section class="card section">
+                <div class="sectionhead">
+                    <h2 style="margin:0">Actividad</h2><button class="btn"
+                        data-msg="Crear publicación está desactivado en esta demostración.">Crear una
+                        publicación</button>
+                </div>
+                <p class="muted">4.275 seguidores</p>
+                <div class="tabs"><button class="pill selected" data-tab="publicaciones">Publicaciones</button><button
+                        class="pill" data-tab="comentarios">Comentarios</button></div>
+                <div id="activity">
+                    <article class="post">
+                        <div class="posthead">
+                            <div class="postavatar">AS</div>
+                            <div>
+                                <div class="postname">Alexey Suzdalenko · Tú</div>
+                                <div class="muted" style="font-size:12px">Industrial Data Engineer | Industry 4.0 &amp;
+                                    IIoT</div>
+                                <div class="muted" style="font-size:11px">Hace 2 meses · 🌐</div>
+                            </div>
+                        </div>
+                        <p>Proyecto y recursos sobre herramientas para desarrollo y productividad.</p>
+                        <div class="preview">Excel CSV Viewer · Visual Studio Marketplace</div>
+                        <div class="engagement"><span>👍 531 impresiones</span><span>Ver análisis</span></div>
+                        <div class="postactions"><button data-msg="Reacción de demostración.">♡
+                                Recomendar</button><button data-msg="No se publica ningún comentario.">▤
+                                Comentar</button><button data-msg="Compartir está desactivado.">↗ Compartir</button>
+                        </div>
+                    </article>
+                </div>
+            </section>
+            <section class="card section">
+                <h2>Experiencia</h2>
+                <div class="exp">
+                    <div class="logo">F</div>
+                    <div>
+                        <h3>Ingeniero de software industrial</h3>
+                        <p>Froxá S.A.</p>
+                        <p class="muted">may. de 2021 - oct. de 2026 · 5 años 6 meses</p>
+                        <p class="muted">Cantabria, España</p>
+                        <p style="margin-top:9px"><strong>Ingeniero de Software Industrial | OT + IT | Industria
+                                4.0</strong></p>
+                        <p>Desarrollo de aplicaciones industriales end-to-end para cálculo de OEE, ritmos de producción
+                            y KPIs en tiempo real. Integración de equipos y sistemas de planta con backend, bases de
+                            datos y cuadros de mando.</p>
+                    </div>
+                </div>
+                <div class="exp">
+                    <div class="logo">DEV</div>
+                    <div>
+                        <h3>Full-Stack Developer | Android</h3>
+                        <p>Freelancer · Profesional independiente</p>
+                        <p class="muted">feb. de 2011 - ene. de 2019 · 8 años</p>
+                        <p class="muted">Santander, Cantabria, España</p>
+                        <p>Desarrollo web con HTML, CSS y JavaScript; backend PHP y MySQL; aplicaciones Android con
+                            Kotlin y Firebase.</p>
+                    </div>
+                </div>
+            </section>
+            <section class="card section">
+                <h2>Educación</h2>
+                <div class="edu">
+                    <div class="edulogo">FP</div>
+                    <div><strong>Grado Superior</strong>
+                        <p>Desarrollo de Aplicaciones Web</p>
+                        <p class="muted">Formación profesional</p>
+                    </div>
+                </div>
+            </section>
+            <section class="card section" id="empleos">
+                <h2>Aplicaciones vinculadas</h2>
+                <p class="muted">Herramientas y tecnologías de tu perfil profesional.</p>
+                <div class="buttons"><span class="pill">Python</span><span class="pill">Power BI</span><span
+                        class="pill">PostgreSQL</span><span class="pill">OPC UA</span><span class="pill">MQTT</span>
+                </div>
+            </section>
+        </main>
+        <aside>
+            <section class="promo">
+                <div class="ad">Anuncio · SIMULADO</div>
+                <h3>Alexey, descubre nuevas oportunidades</h3>
+                <p>Explora ideas para mejorar tu perfil profesional. Este bloque es decorativo.</p><button class="btn"
+                    data-msg="No hay suscripción ni compra en esta página.">Más información</button>
+            </section>
+            <section class="card side">
+                <h3>Otros perfiles vistos por tus visitantes</h3>
+                <p class="muted" style="font-size:12px">Solo para ti</p>
+                <div class="person">
+                    <div class="sideavatar">IT</div>
+                    <div><strong>Desarrollador de software</strong><small>Ingeniería e innovación
+                            tecnológica</small><button class="sidebtn"
+                            data-msg="Perfil de ejemplo, sin enlace externo.">Ver</button></div>
+                </div>
+                <div class="person">
+                    <div class="sideavatar">PY</div>
+                    <div><strong>Backend Developer</strong><small>Tecnologías de la información</small><button
+                            class="sidebtn" data-msg="Perfil de ejemplo, sin enlace externo.">Ver</button></div>
+                </div>
+                <div class="person">
+                    <div class="sideavatar">DA</div>
+                    <div><strong>Data Engineer</strong><small>Analítica e integración de datos</small><button
+                            class="sidebtn" data-msg="Perfil de ejemplo, sin enlace externo.">Ver</button></div>
+                </div>
+            </section>
+            <section class="card side" id="red">
+                <h3>Gente que podrías conocer</h3>
+                <div class="person">
+                    <div class="sideavatar">JH</div>
+                    <div><strong>Juan Holgado</strong><small>Dirección general</small><button class="sidebtn"
+                            data-msg="La función conectar no está habilitada.">＋ Conectar</button></div>
+                </div>
+                <div class="person">
+                    <div class="sideavatar">SJ</div>
+                    <div><strong>Sergio J</strong><small>Industria alimentaria</small><button class="sidebtn"
+                            data-msg="La función conectar no está habilitada.">＋ Conectar</button></div>
+                </div>
+                <div class="person">
+                    <div class="sideavatar">PC</div>
+                    <div><strong>Packi C.</strong><small>Marketing</small><button class="sidebtn"
+                            data-msg="La función conectar no está habilitada.">＋ Conectar</button></div>
+                </div>
+            </section>
+            <section class="card side">
+                <h3>Podría gustarte</h3>
+                <div class="person">
+                    <div class="sideavatar">AT</div>
+                    <div><strong>Atos</strong><small>Servicios y consultoría de TI</small><button class="sidebtn"
+                            data-msg="Seguimiento simulado.">＋ Seguir</button></div>
+                </div>
+                <div class="person">
+                    <div class="sideavatar">EX</div>
+                    <div><strong>Exceltic</strong><small>Servicios de ingeniería</small><button class="sidebtn"
+                            data-msg="Seguimiento simulado.">＋ Seguir</button></div>
+                </div>
+            </section>
+        </aside>
+    </div>
+    <footer>
+        <p>Acerca de · Accesibilidad · Ayuda · Privacidad y condiciones · Publicidad · Servicios para empresas</p>
+        <p>Interfaz de demostración local · No está afiliada a LinkedIn · No envía datos a ningún servidor</p>
+    </footer>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script>
+        const toast = document.getElementById('toast'); let timer;
+        function notify(msg) { toast.textContent = msg; toast.style.display = 'block'; clearTimeout(timer); timer = setTimeout(() => toast.style.display = 'none', 2600) }
+        document.querySelectorAll('[data-msg]').forEach(el => el.addEventListener('click', e => { e.preventDefault(); notify(el.dataset.msg) }));
+        document.querySelectorAll('[data-tab]').forEach(btn => btn.addEventListener('click', () => {
+            document.querySelectorAll('[data-tab]').forEach(b => b.classList.toggle('selected', b === btn));
+            const activity = document.getElementById('activity');
+            activity.innerHTML = btn.dataset.tab === 'comentarios'
+                ? '<div class="post"><p><strong>Comentarios de ejemplo</strong></p><p class="muted">Contenido ficticio. No está conectado a ninguna cuenta ni publica nada.</p></div>'
+                : '<article class="post"><div class="posthead"><div class="postavatar">AS</div><div><div class="postname">Alexey Suzdalenko · Tú</div><div class="muted" style="font-size:12px">Industrial Data Engineer | Industry 4.0 &amp; IIoT</div><div class="muted" style="font-size:11px">Hace 2 meses · 🌐</div></div></div><p>Proyecto y recursos sobre herramientas para desarrollo y productividad.</p><div class="preview">Excel CSV Viewer · Visual Studio Marketplace</div><div class="engagement"><span>👍 531 impresiones</span><span>Ver análisis</span></div><div class="postactions"><button data-msg="Reacción de demostración.">♡ Recomendar</button><button data-msg="No se publica ningún comentario.">▤ Comentar</button><button data-msg="Compartir está desactivado.">↗ Compartir</button></div></article>';
+            activity.querySelectorAll('[data-msg]').forEach(el => el.addEventListener('click', () => notify(el.dataset.msg)));
+        }));
+        document.getElementById('search').addEventListener('keydown', e => { if (e.key === 'Enter') notify(e.target.value.trim() ? 'Búsqueda local de demostración: “' + e.target.value.trim() + '”' : 'Escribe algo para buscar.') });
+    </script>
+</body>
+
+</html>

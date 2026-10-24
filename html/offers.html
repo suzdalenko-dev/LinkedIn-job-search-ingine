@@ -1,0 +1,733 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Empleos | Simulación local</title>
+    <style>
+        :root {
+            --blue: #0a66c2;
+            --blue-dark: #004182;
+            --text: #191919;
+            --muted: #666;
+            --line: #ddd;
+            --bg: #f3f2ef;
+            --green: #057642
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font: 13px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif
+        }
+
+        a {
+            color: var(--blue);
+            text-decoration: none
+        }
+
+        a:hover {
+            text-decoration: underline
+        }
+
+        button,
+        input {
+            font: inherit
+        }
+
+        button {
+            cursor: pointer
+        }
+
+        .topbar {
+            height: 56px;
+            background: #fff;
+            border-bottom: 1px solid #ddd;
+            position: sticky;
+            top: 0;
+            z-index: 10
+        }
+
+        .nav {
+            max-width: 1260px;
+            height: 100%;
+            margin: auto;
+            padding: 0 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 218px;
+            height: 28px;
+            background: var(--blue);
+            color: #fff;
+            border-radius: 3px;
+            font-size: 22px;
+            font-weight: 750;
+            letter-spacing: -1px
+        }
+
+        .search {
+            height: 32px;
+            width: min(390px, 34vw);
+            border: 1px solid #ddd;
+            border-radius: 18px;
+            background: #fff;
+            padding: 0 14px;
+            outline: 0
+        }
+
+        .search:focus {
+            border-color: #777;
+            background: #f7f9fa
+        }
+
+        .navlinks {
+            margin-left: auto;
+            display: flex;
+            height: 100%;
+            align-items: stretch
+        }
+
+        .navlink {
+            min-width: 56px;
+            padding: 5px 8px 3px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #555;
+            font-size: 10px;
+            border-bottom: 2px solid transparent;
+            white-space: nowrap
+        }
+
+        .navlink .ico {
+            font-size: 20px;
+            line-height: 24px
+        }
+
+        .navlink.active {
+            border-bottom-color: #191919;
+            color: #191919
+        }
+
+        .navlink.premium {
+            color: #805500;
+            text-decoration: underline;
+            max-width: 86px;
+            white-space: normal;
+            text-align: center
+        }
+
+        .miniavatar {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: #e0e8ed;
+            color: #294b61;
+            font-size: 10px
+        }
+
+        .filters {
+            background: #fff;
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0
+        }
+
+        .filterinner {
+            max-width: 1260px;
+            margin: auto;
+            padding: 0 18px;
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap
+        }
+
+        .filter {
+            background: white;
+            border: 1px solid #777;
+            border-radius: 18px;
+            padding: 5px 12px;
+            color: #333;
+            font-size: 12px
+        }
+
+        .filter.active {
+            background: #e8f3ff;
+            border-color: var(--blue);
+            color: var(--blue)
+        }
+
+        .layout {
+            max-width: 1260px;
+            margin: 0 auto;
+            padding: 0 18px;
+            display: grid;
+            grid-template-columns: 350px minmax(0, 1fr);
+            gap: 16px;
+            height: calc(100vh - 112px);
+            min-height: 600px
+        }
+
+        .results {
+            overflow: auto;
+            min-width: 0;
+            border-right: 1px solid #ddd;
+            padding-right: 8px
+        }
+
+        .resultshead {
+            padding: 14px 8px 12px
+        }
+
+        .resultshead h2 {
+            font-size: 16px;
+            margin: 0 0 3px;
+            font-weight: 600
+        }
+
+        .resultshead p {
+            font-size: 11px;
+            color: #666;
+            margin: 0
+        }
+
+        .result {
+            position: relative;
+            padding: 12px 8px 12px 10px;
+            border-bottom: 1px solid #ddd;
+            display: grid;
+            grid-template-columns: 42px minmax(0, 1fr) 20px;
+            gap: 8px;
+            background: #fff;
+            cursor: pointer
+        }
+
+        .result:hover {
+            background: #f5faff
+        }
+
+        .result.selected {
+            background: #eef3f8;
+            border-left: 2px solid #191919;
+            padding-left: 8px
+        }
+
+        .logo {
+            width: 38px;
+            height: 38px;
+            border: 1px solid #eee;
+            border-radius: 3px;
+            background: #e5edf4;
+            display: grid;
+            place-items: center;
+            color: #315c7c;
+            font-size: 14px;
+            font-weight: 700
+        }
+
+        .result h3 {
+            font-size: 13px;
+            color: var(--blue);
+            font-weight: 600;
+            line-height: 1.3;
+            margin: 0 0 2px
+        }
+
+        .result .company {
+            font-size: 11px;
+            margin-bottom: 2px
+        }
+
+        .result .loc,
+        .result .small {
+            font-size: 10px;
+            color: #666;
+            margin-top: 2px
+        }
+
+        .result .menu {
+            border: 0;
+            background: none;
+            color: #555;
+            font-size: 18px;
+            padding: 0;
+            align-self: start
+        }
+
+        .result .promoted {
+            font-size: 10px;
+            color: #666;
+            margin-top: 3px
+        }
+
+        .detail {
+            overflow: auto;
+            min-width: 0;
+            background: white;
+            border-left: 1px solid #ddd;
+            border-right: 1px solid #ddd
+        }
+
+        .detailhead {
+            padding: 22px 22px 20px;
+            border-bottom: 1px solid #eee
+        }
+
+        .companyrow {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px
+        }
+
+        .companylogo {
+            width: 28px;
+            height: 28px;
+            border-radius: 2px;
+            background: #e1edf4;
+            color: #245878;
+            font-weight: 700;
+            display: grid;
+            place-items: center
+        }
+
+        .companyname {
+            font-size: 12px;
+            font-weight: 500
+        }
+
+        .more {
+            margin-left: auto;
+            border: 0;
+            background: transparent;
+            font-size: 22px;
+            color: #666
+        }
+
+        h1 {
+            font-size: 20px;
+            line-height: 1.3;
+            margin: 0 0 5px;
+            font-weight: 650
+        }
+
+        .verify {
+            font-size: 12px;
+            color: #666
+        }
+
+        .meta {
+            color: #666;
+            font-size: 11px;
+            margin: 5px 0
+        }
+
+        .chips {
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap;
+            margin: 12px 0
+        }
+
+        .chip {
+            border: 1px solid #aaa;
+            border-radius: 18px;
+            padding: 4px 10px;
+            font-size: 11px
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px
+        }
+
+        .btn {
+            border: 1px solid var(--blue);
+            border-radius: 18px;
+            background: #fff;
+            color: var(--blue);
+            font-weight: 600;
+            padding: 5px 14px;
+            font-size: 12px
+        }
+
+        .btn.primary {
+            background: var(--blue);
+            color: #fff
+        }
+
+        .btn.primary:hover {
+            background: var(--blue-dark)
+        }
+
+        .btn.saved {
+            background: #e8f3ff
+        }
+
+        .alertbox {
+            border: 1px solid #ddd;
+            border-radius: 7px;
+            padding: 18px;
+            margin: 18px 0 12px
+        }
+
+        .alerttitle {
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.35;
+            margin-bottom: 10px;
+            max-width: 500px
+        }
+
+        .ai-button {
+            border: 1px solid #ddd;
+            background: #fff;
+            border-radius: 12px;
+            padding: 10px 14px;
+            color: #444
+        }
+
+        .beta {
+            font-size: 10px;
+            color: #777;
+            margin-top: 12px;
+            display: flex;
+            justify-content: space-between;
+            gap: 12px
+        }
+
+        .premium-box {
+            border: 1px solid #ddd;
+            border-radius: 7px;
+            padding: 18px;
+            margin: 12px 0 24px
+        }
+
+        .premium-box h3 {
+            font-size: 13px;
+            line-height: 1.4;
+            margin: 0 0 8px
+        }
+
+        .premium-box p {
+            font-size: 11px;
+            color: #666;
+            margin: 0 0 9px
+        }
+
+        .premium-link {
+            font-size: 11px;
+            font-weight: 600
+        }
+
+        .jobbody {
+            padding: 0 22px 24px
+        }
+
+        .jobbody h2 {
+            font-size: 16px;
+            margin: 0 0 8px;
+            font-weight: 600
+        }
+
+        .jobbody p {
+            margin: 0 0 12px
+        }
+
+        .jobbody h3 {
+            font-size: 14px;
+            margin: 18px 0 7px
+        }
+
+        .jobbody ul {
+            margin: 6px 0 16px;
+            padding-left: 20px
+        }
+
+        .jobbody li {
+            margin: 5px 0
+        }
+
+        .jobsummary {
+            font-size: 12px;
+            line-height: 1.55
+        }
+
+        .companyabout {
+            border-top: 1px solid #eee;
+            margin-top: 24px;
+            padding-top: 18px
+        }
+
+        .companyhead {
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+
+        .companyhead .companylogo {
+            width: 46px;
+            height: 46px;
+            font-size: 18px
+        }
+
+        .companyabout h3 {
+            margin: 0 0 4px;
+            font-size: 16px
+        }
+
+        .companyabout .muted {
+            font-size: 11px;
+            color: #666
+        }
+
+        .companyabout p {
+            margin: 12px 0;
+            font-size: 12px
+        }
+
+        .companyfacts {
+            display: flex;
+            gap: 22px;
+            flex-wrap: wrap;
+            color: #666;
+            font-size: 11px;
+            border-top: 1px solid #eee;
+            padding-top: 12px
+        }
+
+        .footer {
+            padding: 16px 22px;
+            color: #666;
+            font-size: 10px;
+            text-align: center
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 22px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #222;
+            color: #fff;
+            padding: 12px 18px;
+            border-radius: 7px;
+            display: none;
+            z-index: 30;
+            max-width: 90%;
+            box-shadow: 0 3px 14px #0003
+        }
+
+        @media(max-width:900px) {
+            .layout {
+                grid-template-columns: 300px minmax(0, 1fr);
+                gap: 10px
+            }
+
+            .search {
+                width: 230px
+            }
+
+            .navlink {
+                min-width: 45px;
+                padding-left: 4px;
+                padding-right: 4px
+            }
+
+            .navlink.premium {
+                display: none
+            }
+        }
+
+        @media(max-width:680px) {
+            .nav {
+                gap: 7px
+            }
+
+            .search {
+                width: 100%;
+                min-width: 0
+            }
+
+            .searchwrap {
+                flex: 1;
+                min-width: 0
+            }
+
+            .navlink:nth-child(n+4) {
+                display: none
+            }
+
+            .layout {
+                display: block;
+                height: auto;
+                min-height: 0;
+                padding: 0 8px
+            }
+
+            .results {
+                display: none
+            }
+
+            .detail {
+                height: auto;
+                overflow: visible
+            }
+
+            .detailhead {
+                padding: 18px 14px
+            }
+
+            .jobbody {
+                padding: 0 14px 20px
+            }
+
+            .premium-box,
+            .alertbox {
+                padding: 13px
+            }
+
+            .navlink {
+                min-width: 38px
+            }
+
+            .filters {
+                padding: 8px 0
+            }
+
+            .filterinner {
+                padding: 0 8px
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="topbar">
+        <nav class="nav" aria-label="Navegación principal">
+            <a class="brand" href="#inicio" aria-label="Inicio">Linked<span>On</span></a>
+            <input class="search" id="search" placeholder="Describe el empleo que te gustaría"
+                aria-label="Buscar empleos">
+            <div class="navlinks">
+                <a class="navlink" href="#inicio"><span class="ico">⌂</span>Inicio</a>
+                <a class="navlink" href="#red"><span class="ico">♧</span>Mi red</a>
+                <a class="navlink active" href="#empleos"><span class="ico">▣</span>Empleos</a>
+                <a class="navlink" href="#mensajes"><span class="ico">▤</span>Mensajes</a>
+                <a class="navlink" href="#notificaciones"><span class="ico">♧</span>Notificaciones</a>
+                <a class="navlink" href="#yo"><span class="miniavatar">AS</span>Yo ▾</a>
+                <a class="navlink premium" href="#premium">Para negocios<br>Probar Premium por 0 €</a>
+            </div>
+        </nav>
+    </header>
+    <div class="filters">
+        <div class="filterinner">
+            <button class="filter" data-filter="Fecha de publicación">Fecha de publicación⌄</button>
+            <button class="filter" data-filter="Solicitud sencilla">Solicitud sencilla</button>
+            <button class="filter" data-filter="Menos de 10 solicitantes">Menos de 10 solicitantes</button>
+            <button class="filter" data-filter="En mi red">En mi red</button>
+            <button class="filter" data-filter="Más información">Más información⌄</button>
+        </div>
+    </div>
+    <div class="layout" id="empleos">
+        <aside class="results">
+            <div class="resultshead">
+                <h2>Empleos según tus preferencias</h2>
+                <p>Programador o Ingeniero de software o Analista, on-site or hybrid or remote en Bilbao, Santander,
+                    Zamudio, Autonomía de Cantabria, España</p>
+                <p style="margin-top:6px">Más de 99 resultados</p>
+            </div>
+            <div id="resultList"></div>
+            <div class="resultshead"><button class="filter"
+                    data-msg="Paginación ficticia: esta demo no consulta ofertas reales.">1　2　3　Siguiente →</button>
+            </div>
+        </aside>
+        <main class="detail" id="detailPanel" aria-live="polite"></main>
+    </div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script>
+        const jobs = [
+            { id: 1, company: "Connect Vision International", logo: "◆", title: "Data Platform Engineer", location: "España (En remoto)", date: "hace 1 semana", clicks: "62 personas han hecho clic", salary: "35 €/hora", work: "En remoto", contract: "Contrato por obra", tags: ["Promocionado"], verified: true, save: false, alert: "A tu perfil y a tu currículum les faltan algunos requisitos indispensables.", match: "Azure, Databricks, Unity Catalog, Terraform, Python, PySpark, SQL", description: `<p><strong>Data Platform Engineer | Azure &amp; Databricks | Fully Remote | Portugal / Spain</strong></p><p>📍 Location: Portugal or Spain – 100% Remote<br>💰 Rate: €35/hour<br>📅 Duration: 12-month contract<br>🚀 Start: ASAP<br>🌍 English: professional working proficiency</p><p>About the Role<br>Connect Vision International is looking for an experienced Data Platform Engineer to join an international team working on a large-scale Azure Data Analytics Platform. You will help develop, automate, secure and scale a shared enterprise data platform used by engineering teams across multiple countries.</p><p>This is a platform-focused engineering role, requiring hands-on experience with Azure infrastructure, Databricks administration, governance and software engineering practices.</p><h3>Key Responsibilities</h3><ul><li>Build, improve and maintain reusable Azure data platform components.</li><li>Administer and automate Databricks environments and platform services.</li><li>Implement Infrastructure as Code and CI/CD pipelines.</li><li>Support platform security, access management and governance.</li><li>Develop modular and scalable solutions using Python, PySpark and SQL.</li><li>Improve platform monitoring, reliability and performance.</li><li>Collaborate with international engineering teams and stakeholders.</li></ul><h3>Required Skills</h3><ul><li>5–7+ years of relevant software, data or platform engineering experience.</li><li>Strong Microsoft Azure engineering experience.</li><li>Hands-on Databricks platform administration and Unity Catalog knowledge.</li><li>Infrastructure as Code (Terraform, Bicep, Pulumi or similar).</li><li>Python, PySpark, SQL and strong software engineering fundamentals.</li><li>CI/CD, automated testing and release engineering.</li><li>Experience with Azure Data Factory, ADLS and Delta Lake.</li><li>Understanding of security, governance and platform operations.</li><li>Excellent communication skills and English.</li></ul><h3>Nice to Have</h3><ul><li>Multi-tenant or productised platform development.</li><li>Monitoring, observability and incident management.</li><li>Event-driven architectures, streaming or LakeFlow.</li><li>Experience working in regulated environments.</li></ul><p>📩 Interested? Apply or send your CV to Connect Vision International, quoting 342 – Data Platform Engineer.</p>` },
+            { id: 2, company: "Northstar Data Systems", logo: "N", title: "Data Platform Engineer, Data Infrastructure & Services", location: "España (En remoto)", date: "hace 2 días", clicks: "", salary: "", work: "En remoto", contract: "Jornada completa", tags: ["Promocionado"], verified: true, save: false, description: `<p><strong>Data Platform Engineer | Data Infrastructure &amp; Services</strong></p><p>Join a distributed engineering group building reliable data foundations for analytics products used by customers across Europe.</p><h3>Responsabilidades</h3><ul><li>Diseñar servicios de ingesta y transformación de datos.</li><li>Operar pipelines batch y streaming con monitorización y alertas.</li><li>Crear componentes reutilizables y automatizar despliegues.</li><li>Colaborar con ingeniería, seguridad y analítica.</li></ul><h3>Requisitos</h3><ul><li>Python, SQL y experiencia con plataformas cloud.</li><li>Conocimientos de almacenamiento analítico y modelado de datos.</li><li>Pruebas automatizadas, CI/CD y buenas prácticas de desarrollo.</li><li>Inglés técnico para documentación y colaboración.</li></ul><h3>Se valorará</h3><ul><li>Databricks, Spark, Terraform y herramientas de observabilidad.</li><li>Experiencia con control de acceso y gobierno del dato.</li></ul>` },
+            { id: 3, company: "NubeNorte Tecnología", logo: "N", title: "Ingeniero/a Software Java (100% teletrabajo)", location: "España (En remoto)", date: "hace 2 semanas", clicks: "", salary: "38.000 € – 46.000 €/año", work: "En remoto", contract: "Indefinido", tags: [], verified: true, save: false, description: `<p><strong>Ingeniero/a de Software Java | 100% remoto</strong></p><p>Buscamos un perfil backend para desarrollar servicios empresariales con Java y Spring Boot, participando en el diseño técnico y la mejora continua de una plataforma distribuida.</p><h3>Funciones</h3><ul><li>Desarrollar APIs REST con Java y Spring Boot.</li><li>Diseñar consultas y modelos de datos relacionales.</li><li>Escribir pruebas unitarias y de integración.</li><li>Participar en revisiones de código y decisiones de arquitectura.</li><li>Colaborar con equipos de producto y QA en metodología ágil.</li></ul><h3>Requisitos</h3><ul><li>Experiencia sólida con Java, Spring Boot y SQL.</li><li>Conocimiento de Git, testing y pipelines CI/CD.</li><li>Se valorará Docker, Kubernetes y mensajería.</li></ul>` },
+            { id: 4, company: "NubeNorte Tecnología", logo: "N", title: "Ingeniero/a Software Java (100% teletrabajo)", location: "España (En remoto)", date: "hace 2 semanas", clicks: "20 contactos trabajan aquí", salary: "38.000 € – 46.000 €/año", work: "En remoto", contract: "Indefinido", tags: [], verified: true, save: false, description: `<p><strong>Ingeniero/a de Software Java | Equipo de integraciones</strong></p><p>El equipo desarrolla integraciones entre sistemas internos, servicios de clientes y plataformas de datos.</p><h3>Responsabilidades</h3><ul><li>Implementar microservicios Java y contratos API.</li><li>Integrar sistemas mediante REST y mensajería.</li><li>Diagnosticar incidencias y optimizar consultas.</li><li>Documentar soluciones técnicas.</li></ul><h3>Requisitos</h3><ul><li>Java, Spring Boot, SQL y pruebas automatizadas.</li><li>Conocimientos de seguridad de APIs y Git.</li><li>Capacidad para trabajar en equipo distribuido.</li></ul>` },
+            { id: 5, company: "Orbital Forge", logo: "◉", title: "Python Developer", location: "España (En remoto)", date: "Visto", clicks: "", salary: "35.000 € – 53.000 €/año", work: "En remoto", contract: "Indefinido", tags: [], verified: true, save: false, description: `<p><strong>Python Developer | Backend &amp; Data Services</strong></p><p>Buscamos un desarrollador Python para construir servicios de backend, automatizaciones e integraciones con bases de datos y APIs de terceros.</p><h3>Funciones</h3><ul><li>Desarrollar APIs con Django o FastAPI.</li><li>Diseñar procesos de integración y tareas asíncronas.</li><li>Optimizar consultas SQL y mantener modelos de datos.</li><li>Crear pruebas, revisar código y mejorar observabilidad.</li></ul><h3>Requisitos</h3><ul><li>Python profesional, APIs REST y SQL.</li><li>Experiencia con Git y pruebas automatizadas.</li><li>Se valorará Docker, cloud y colas de tareas.</li></ul>` },
+            { id: 6, company: "NubeNorte Tecnología", logo: "N", title: "Software Developer Java - Remoto", location: "España (En remoto)", date: "hace 3 semanas", clicks: "20 contactos trabajan aquí", salary: "", work: "En remoto", contract: "Indefinido", tags: [], verified: true, save: false, description: `<p><strong>Software Developer Java – Remote</strong></p><p>Incorporación a un equipo que mantiene aplicaciones de negocio y desarrolla nuevas funcionalidades de backend.</p><h3>Qué harás</h3><ul><li>Construir funcionalidades en Java y Spring.</li><li>Trabajar con bases de datos relacionales y APIs.</li><li>Mejorar la cobertura de pruebas y la calidad del código.</li><li>Participar en planificación y revisión técnica.</li></ul><h3>Qué necesitamos</h3><ul><li>Java, SQL, Git y fundamentos de desarrollo backend.</li><li>Conocimiento de REST y pruebas unitarias.</li><li>Valorable experiencia con cloud y contenedores.</li></ul>` },
+            { id: 7, company: "Lógica Atlántica", logo: "LA", title: "IA & Backend Developer", location: "España (En remoto)", date: "Visto", clicks: "3 contactos trabajan aquí", salary: "28.000 € – 35.000 €/año", work: "En remoto", contract: "Indefinido", tags: [], verified: true, save: false, description: `<p><strong>IA &amp; Backend Developer</strong></p><p>Buscamos una persona para integrar capacidades de IA en productos digitales, combinando desarrollo backend, APIs y procesamiento de documentos.</p><h3>Responsabilidades</h3><ul><li>Desarrollar servicios backend con Python.</li><li>Integrar modelos de lenguaje mediante APIs.</li><li>Crear flujos de extracción y clasificación de documentos.</li><li>Medir calidad, latencia, coste y fiabilidad de las soluciones.</li><li>Trabajar con bases de datos y pipelines de datos.</li></ul><h3>Requisitos</h3><ul><li>Python, APIs REST, SQL y control de versiones.</li><li>Interés por LLM, OCR, NLP o búsqueda semántica.</li><li>Buenas prácticas de testing y seguridad.</li></ul>` },
+            { id: 8, company: "Meridian Cloud Iberia", logo: "M", title: "Mid/Senior .NET Developer - 100% Remote, Spain", location: "España (En remoto)", date: "hace 1 mes", clicks: "Evaluando solicitudes de forma activa", salary: "40.000 € – 52.000 €/año", work: "En remoto", contract: "Indefinido", tags: ["Solicitud sencilla", "Promocionado"], verified: true, save: false, description: `<p><strong>Mid/Senior .NET Developer – 100% Remote, Spain</strong></p><p>Join a product engineering team modernising a cloud-based business platform with .NET and Azure.</p><h3>Responsibilities</h3><ul><li>Build backend services using C# and modern .NET.</li><li>Design REST APIs and integrate external systems.</li><li>Work with SQL databases, automated tests and CI/CD.</li><li>Participate in code reviews and technical design.</li></ul><h3>Requirements</h3><ul><li>Professional experience with C#, .NET and SQL.</li><li>API design, testing and Git workflows.</li><li>English for technical collaboration.</li></ul>` },
+            { id: 9, company: "Altitude Bridge", logo: "A", title: "Consultor/Analista Programador/Ingeniero Software", location: "España (En remoto)", date: "hace 2 años", clicks: "", salary: "", work: "En remoto", contract: "Por proyecto", tags: [], verified: false, save: false, description: `<p><strong>Consultor / Analista Programador / Ingeniero de Software</strong></p><p>Proyecto de consultoría tecnológica con asignaciones variables en desarrollo de aplicaciones empresariales e integración de sistemas.</p><h3>Funciones</h3><ul><li>Analizar requisitos y proponer soluciones técnicas.</li><li>Desarrollar y mantener aplicaciones.</li><li>Documentar procesos y apoyar despliegues.</li></ul><h3>Requisitos</h3><ul><li>Experiencia en desarrollo de software y bases de datos.</li><li>Capacidad de análisis y comunicación con cliente.</li><li>Stack tecnológico concreto según proyecto.</li></ul>` },
+            { id: 10, company: "Maisa Labs", logo: "M", title: "Forward Deployed Engineer", location: "Autonomía de Cantabria, España (En remoto)", date: "Visto", clicks: "", salary: "", work: "En remoto", contract: "Indefinido", tags: ["Promocionado"], verified: true, save: false, description: `<p><strong>Forward Deployed Engineer</strong></p><p>Trabajarás junto a clientes para convertir procesos complejos en soluciones de software, automatización e IA desplegadas en entornos reales.</p><h3>Responsabilidades</h3><ul><li>Entender procesos operativos y traducirlos a requisitos técnicos.</li><li>Construir integraciones, prototipos y herramientas internas.</li><li>Conectar APIs, datos y sistemas empresariales.</li><li>Desplegar soluciones, medir resultados y resolver incidencias.</li></ul><h3>Requisitos</h3><ul><li>Programación sólida y capacidad de diagnóstico.</li><li>Experiencia con APIs, bases de datos y sistemas distribuidos.</li><li>Se valorará Python, automatización y LLM.</li></ul>` },
+            { id: 11, company: "Atwork Digital", logo: "A", title: "Full stack Developer", location: "España (En remoto)", date: "Visto", clicks: "", salary: "", work: "En remoto", contract: "Indefinido", tags: ["Promocionado"], verified: true, save: false, description: `<p><strong>Full Stack Developer</strong></p><p>Desarrollo de aplicaciones web desde el frontend hasta los servicios de backend.</p><h3>Funciones</h3><ul><li>Crear interfaces accesibles y componentes reutilizables.</li><li>Implementar APIs y lógica de negocio.</li><li>Trabajar con SQL, testing y despliegues.</li></ul><h3>Requisitos</h3><ul><li>JavaScript, HTML, CSS y experiencia en backend.</li><li>Conocimiento de bases de datos y Git.</li><li>Se valorará Vue o React y servicios cloud.</li></ul>` },
+            { id: 12, company: "Técnicas del Norte", logo: "TN", title: "Desarrollador/a Full Stack", location: "Bilbao (Híbrido)", date: "Visto", clicks: "2 contactos trabajan aquí", salary: "32.000 € – 42.000 €/año", work: "Híbrido", contract: "Indefinido", tags: ["Promocionado"], verified: true, save: false, description: `<p><strong>Desarrollador/a Full Stack – Bilbao (modelo híbrido)</strong></p><p>Incorporación al equipo de digitalización industrial para desarrollar herramientas internas, portales y servicios de integración.</p><h3>Responsabilidades</h3><ul><li>Desarrollar frontend web y servicios backend.</li><li>Integrar aplicaciones con bases de datos y APIs internas.</li><li>Colaborar con usuarios de negocio y equipos técnicos.</li><li>Mantener documentación y pruebas.</li></ul><h3>Requisitos</h3><ul><li>JavaScript, HTML/CSS y algún framework frontend.</li><li>Experiencia con backend y SQL.</li><li>Se valorará experiencia en industria o sistemas OT/IT.</li></ul>` },
+            { id: 13, company: "NETCheck Atlántico", logo: "N", title: "Analista Programador/a Oracle", location: "España (En remoto)", date: "hace 2 semanas", clicks: "", salary: "", work: "En remoto", contract: "Indefinido", tags: [], verified: true, save: false, description: `<p><strong>Analista Programador/a Oracle</strong></p><p>Mantenimiento y evolución de aplicaciones empresariales con Oracle Database y PL/SQL.</p><h3>Funciones</h3><ul><li>Analizar requisitos y desarrollar procedimientos almacenados.</li><li>Optimizar consultas y diagnosticar incidencias.</li><li>Preparar documentación técnica y pruebas.</li></ul><h3>Requisitos</h3><ul><li>SQL/PLSQL y fundamentos de bases de datos.</li><li>Experiencia en aplicaciones empresariales.</li><li>Se valorará integración con Java y servicios REST.</li></ul>` },
+            { id: 14, company: "Omilia Works", logo: "O", title: "AI Developer / Software Engineer", location: "España (En remoto)", date: "Evaluando solicitudes de forma activa", clicks: "", salary: "", work: "En remoto", contract: "Indefinido", tags: [], verified: true, save: false, description: `<p><strong>AI Developer / Software Engineer</strong></p><p>Desarrollo de componentes de software que integran modelos de IA en productos conversacionales y flujos de atención digital.</p><h3>Responsabilidades</h3><ul><li>Construir servicios y conectores backend.</li><li>Integrar APIs de IA y gestionar errores.</li><li>Diseñar pruebas de calidad y monitorización.</li></ul><h3>Requisitos</h3><ul><li>Python o Java, APIs REST y SQL.</li><li>Buenas prácticas de desarrollo y pruebas.</li><li>Interés en NLP y sistemas de IA.</li></ul>` },
+            { id: 15, company: "Soltel Cantábrico", logo: "S", title: "Analista programador/a - Java Backend", location: "España (En remoto)", date: "hace 2 días", clicks: "Evaluando solicitudes de forma activa", salary: "33.000 € – 41.000 €/año", work: "En remoto", contract: "Indefinido", tags: ["Solicitud sencilla", "Promocionado"], verified: true, save: false, description: `<p><strong>Analista programador/a – Java Backend</strong></p><p>Participarás en el diseño y mantenimiento de servicios backend para una plataforma de gestión empresarial.</p><h3>Funciones</h3><ul><li>Desarrollar servicios Java/Spring y APIs REST.</li><li>Modelar datos y mantener consultas SQL.</li><li>Crear pruebas unitarias y de integración.</li><li>Colaborar con analistas funcionales y QA.</li></ul><h3>Requisitos</h3><ul><li>Java, Spring Boot, SQL y Git.</li><li>Experiencia con APIs y testing.</li><li>Se valorará Docker y CI/CD.</li></ul>` },
+            { id: 16, company: "INNOCV Atlántica", logo: "I", title: ".NET Developer", location: "España (En remoto)", date: "Guardado", clicks: "", salary: "38.000 € – 48.000 €/año", work: "En remoto", contract: "Indefinido", tags: [], verified: true, save: true, description: `<p><strong>.NET Developer</strong></p><p>Desarrollo de servicios y aplicaciones empresariales con C# y .NET.</p><h3>Responsabilidades</h3><ul><li>Crear y mantener APIs REST.</li><li>Integrar SQL Server y servicios externos.</li><li>Escribir pruebas y participar en revisiones de código.</li></ul><h3>Requisitos</h3><ul><li>C#, .NET, SQL y Git.</li><li>Conocimientos de arquitectura por capas y testing.</li><li>Se valorará Azure y contenedores.</li></ul>` },
+            { id: 17, company: "Fujitsu", logo: "F", title: "Data Engineer", location: "España (En remoto)", date: "hace 1 semana", clicks: "1 contacto trabaja aquí", salary: "", work: "En remoto", contract: "Indefinido", tags: ["Promocionado"], verified: true, save: false, description: `<p><strong>Data Engineer</strong></p><p>Construcción y operación de pipelines de datos para servicios de analítica y reporting.</p><h3>Funciones</h3><ul><li>Desarrollar procesos ETL/ELT.</li><li>Trabajar con SQL y herramientas de integración.</li><li>Monitorizar calidad, disponibilidad y rendimiento de datos.</li></ul><h3>Requisitos</h3><ul><li>SQL, Python y conceptos de modelado de datos.</li><li>Experiencia con plataformas de datos.</li><li>Se valorará cloud y Spark.</li></ul>` },
+            { id: 18, company: "FunnelFox Iberia", logo: "F", title: "Fullstack Engineer (Python)", location: "España (En remoto)", date: "Visto", clicks: "", salary: "", work: "En remoto", contract: "Indefinido", tags: [], verified: true, save: false, description: `<p><strong>Fullstack Engineer (Python)</strong></p><p>Desarrollo de producto digital con Python en backend y tecnologías modernas en frontend.</p><h3>Funciones</h3><ul><li>Diseñar endpoints y lógica de negocio.</li><li>Implementar interfaces y flujos de usuario.</li><li>Mejorar rendimiento, calidad y observabilidad.</li></ul><h3>Requisitos</h3><ul><li>Python, APIs, SQL y JavaScript.</li><li>Conocimientos de frontend y pruebas automatizadas.</li><li>Se valorará experiencia en cloud.</li></ul>` },
+            { id: 19, company: "ToBeIT Labs", logo: "T", title: "AI Engineer Python", location: "España (En remoto)", date: "Visto", clicks: "", salary: "", work: "En remoto", contract: "Indefinido", tags: [], verified: true, save: false, description: `<p><strong>AI Engineer Python</strong></p><p>Integración de modelos de IA y servicios de procesamiento de lenguaje en aplicaciones de negocio.</p><h3>Responsabilidades</h3><ul><li>Desarrollar servicios Python y pipelines de datos.</li><li>Integrar modelos mediante APIs.</li><li>Evaluar resultados y crear pruebas reproducibles.</li></ul><h3>Requisitos</h3><ul><li>Python, APIs y bases de datos.</li><li>Conocimientos básicos de LLM/NLP o machine learning.</li><li>Se valorará Docker y cloud.</li></ul>` },
+            { id: 20, company: "EPAM Iberia", logo: "E", title: "Analista Programador/a", location: "España (En remoto)", date: "Guardado", clicks: "9 contactos trabajan aquí", salary: "", work: "En remoto", contract: "Indefinido", tags: [], verified: true, save: true, description: `<p><strong>Analista Programador/a</strong></p><p>Desarrollo y mantenimiento de soluciones empresariales, con participación en análisis, diseño y entrega continua.</p><h3>Funciones</h3><ul><li>Analizar requisitos y estimar tareas.</li><li>Implementar funcionalidades y pruebas.</li><li>Revisar código y colaborar con el equipo.</li></ul><h3>Requisitos</h3><ul><li>Experiencia en desarrollo y bases de datos.</li><li>Git, testing y APIs.</li><li>Stack final definido según proyecto.</li></ul>` },
+            { id: 21, company: "PrimeIT Atlántica", logo: "P", title: ".NET Developer", location: "España (En remoto)", date: "Visto", clicks: "Evaluando solicitudes de forma activa", salary: "", work: "En remoto", contract: "Indefinido", tags: ["Solicitud sencilla", "Promocionado"], verified: true, save: false, description: `<p><strong>.NET Developer</strong></p><p>Equipo de desarrollo de aplicaciones corporativas y servicios de integración con tecnologías Microsoft.</p><h3>Funciones</h3><ul><li>Desarrollar funcionalidades en C#/.NET.</li><li>Crear APIs y trabajar con SQL Server.</li><li>Participar en pruebas, revisiones y despliegues.</li></ul><h3>Requisitos</h3><ul><li>C#, .NET, SQL y Git.</li><li>Conocimiento de APIs REST.</li><li>Se valorará Azure y CI/CD.</li></ul>` },
+            { id: 22, company: "NETCheck Norte", logo: "N", title: "Analista Programador/a Java", location: "España (En remoto)", date: "Guardado", clicks: "10 contactos trabajan aquí", salary: "", work: "En remoto", contract: "Indefinido", tags: [], verified: true, save: true, description: `<p><strong>Analista Programador/a Java</strong></p><p>Desarrollo de servicios backend y evolución de aplicaciones empresariales.</p><h3>Responsabilidades</h3><ul><li>Implementar funcionalidades Java/Spring.</li><li>Diseñar y optimizar consultas SQL.</li><li>Escribir pruebas y mantener documentación.</li></ul><h3>Requisitos</h3><ul><li>Java, SQL, APIs REST y Git.</li><li>Buenas prácticas de desarrollo.</li><li>Se valorará experiencia con cloud.</li></ul>` },
+            { id: 23, company: "MCENG España", logo: "M", title: "AI Integration Engineer", location: "España (En remoto)", date: "hace 5 meses", clicks: "", salary: "25.000 € – 40.000 €/año", work: "En remoto", contract: "Indefinido", tags: [], verified: true, save: false, description: `<p><strong>AI Integration Engineer</strong></p><p>Integración de servicios de IA con aplicaciones empresariales, sistemas de datos y procesos existentes.</p><h3>Funciones</h3><ul><li>Construir conectores y APIs.</li><li>Automatizar flujos de documentos y datos.</li><li>Probar comportamiento, seguridad y rendimiento.</li></ul><h3>Requisitos</h3><ul><li>Python o JavaScript, APIs REST y SQL.</li><li>Capacidad de integración y resolución de problemas.</li><li>Se valorará OCR, NLP y LLM.</li></ul>` },
+            { id: 24, company: "Squad Tech Iberia", logo: "S", title: "Analistas y Programadores JAVA para banca (remoto)", location: "España (En remoto)", date: "hace 2 semanas", clicks: "Evaluando solicitudes de forma activa", salary: "", work: "En remoto", contract: "Indefinido", tags: ["Solicitud sencilla", "Promocionado"], verified: true, save: false, description: `<p><strong>Analistas y Programadores JAVA para banca (remoto)</strong></p><p>Participación en un proyecto de servicios financieros con foco en estabilidad, trazabilidad y calidad del software.</p><h3>Responsabilidades</h3><ul><li>Desarrollar servicios Java y APIs.</li><li>Trabajar con bases de datos relacionales.</li><li>Seguir prácticas de testing y revisión de código.</li><li>Documentar cambios y colaborar con equipos funcionales.</li></ul><h3>Requisitos</h3><ul><li>Java, SQL, Spring y Git.</li><li>Experiencia en entornos de desarrollo corporativos.</li><li>Se valorará experiencia en banca.</li></ul>` },
+            { id: 25, company: "Mondelez Iberia", logo: "M", title: "Data Engineer (Data & Product Engineering)", location: "España (En remoto)", date: "hace 5 días", clicks: "", salary: "", work: "En remoto", contract: "Indefinido", tags: ["Promocionado"], verified: true, save: false, description: `<p><strong>Data Engineer (Data &amp; Product Engineering)</strong></p><p>Colaborarás en la creación de productos de datos y pipelines que permitan a los equipos tomar decisiones basadas en información fiable.</p><h3>Funciones</h3><ul><li>Construir y mantener pipelines de datos.</li><li>Modelar y validar datasets.</li><li>Mejorar calidad, trazabilidad y monitorización.</li></ul><h3>Requisitos</h3><ul><li>Python, SQL y fundamentos de ingeniería de datos.</li><li>Experiencia con procesos ETL/ELT.</li><li>Se valorará cloud y herramientas de orquestación.</li></ul>` }
+        ];
+        let selectedId = 1;
+        const list = document.getElementById('resultList');
+        const toast = document.getElementById('toast');
+        let toastTimer;
+        function notify(msg) { toast.textContent = msg; toast.style.display = 'block'; clearTimeout(toastTimer); toastTimer = setTimeout(() => toast.style.display = 'none', 2700) }
+        function renderList() {
+            list.innerHTML = jobs.map(j => `<article class="result ${j.id === selectedId ? 'selected' : ''}" data-job="${j.id}" tabindex="0" role="button" aria-label="Ver ${j.title}">
+ <div class="logo">${j.logo}</div><div><h3>${j.title}${j.verified ? ' ◈' : ''}</h3><div class="company">${j.company}</div><div class="loc">${j.location}</div>${j.salary ? `<div class="small">${j.salary}</div>` : ''}${j.clicks ? `<div class="small">${j.clicks}</div>` : ''}<div class="small">${j.date}</div>${j.tags.includes('Promocionado') ? '<div class="promoted">◆ Promocionado</div>' : ''}</div><button class="menu" data-menu="${j.id}" aria-label="Más opciones">×</button></article>`).join('');
+            list.querySelectorAll('[data-job]').forEach(el => {
+                const select = () => { selectedId = Number(el.dataset.job); renderList(); renderDetail(jobs.find(j => j.id === selectedId)) };
+                el.addEventListener('click', e => { if (e.target.closest('[data-menu]')) { e.stopPropagation(); notify('Opciones de oferta simuladas.'); return } select() });
+                el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select() } });
+            });
+        }
+        function renderDetail(j) {
+            const saved = j.save;
+            document.getElementById('detailPanel').innerHTML = `<div class="detailhead">
+ <div class="companyrow"><div class="companylogo">${j.logo}</div><div class="companyname">${j.company}</div><button class="more" data-msg="Menú de oferta simulado." aria-label="Más opciones">···</button></div>
+ <h1>${j.title} ${j.verified ? '<span class="verify">◈</span>' : ''}</h1>
+ <div class="meta">${j.location} · ${j.date} ${j.clicks ? '· ' + j.clicks : ''}</div><div class="meta">Respuestas gestionadas fuera de esta demostración</div>
+ <div class="chips">${j.salary ? `<span class="chip">${j.salary}</span>` : ''}<span class="chip">✓ ${j.work}</span><span class="chip">${j.contract}</span></div>
+ <div class="actions"><button class="btn primary" data-apply="${j.id}">Solicitar ↗</button><button class="btn ${saved ? 'saved' : ''}" data-save="${j.id}">${saved ? '✓ Guardado' : 'Guardar'}</button></div>
+ <div class="alertbox"><div class="alerttitle">${j.alert || 'Tu experiencia podría encajar con algunos requisitos de esta oferta.'}</div><button class="ai-button" data-msg="Análisis ficticio: revisa los requisitos y compáralos con tu CV antes de solicitar.">✦ Mostrar los detalles</button><div class="beta"><span>BETA · ¿Te ha resultado útil la información?</span><span><button data-msg="Gracias por tu valoración." aria-label="Sí">♧</button>　<button data-msg="Gracias por tu valoración." aria-label="No">♧</button></span></div></div>
+ <div class="premium-box"><h3>Mira una comparación con otras personas que han mostrado interés en esta oferta</h3><p>Accede a información sobre candidaturas, empleos guardados y oportunidades profesionales. Contenido de demostración.</p><a class="premium-link" href="#premium" data-msg="Premium no está conectado en esta página.">▣ Activar Premium por 0 €</a></div>
+ </div>
+ <div class="jobbody"><h2>Acerca del empleo</h2><div class="jobsummary">${j.description}</div>
+ <div class="companyabout"><div class="companyhead"><div class="companylogo">${j.logo}</div><div><h3>${j.company}</h3><div class="muted">Empresa ficticia para la simulación · Selección de personal</div></div><button class="btn" style="margin-left:auto" data-follow="${j.id}">＋ Seguir</button></div>
+ <p>Esta empresa, sus datos corporativos y esta oferta son ficticios y se han creado únicamente para probar la interfaz local. No representan una vacante real ni una relación con una empresa existente.</p>
+ <div class="companyfacts"><span>▣ Selección y tecnología</span><span>• 11–50 empleados (dato ficticio)</span><span>• España</span></div>
+ </div></div><div class="footer">Acerca de · Accesibilidad · Centro de ayuda · Privacidad y condiciones · Opciones de publicidad<br><br>Simulación local · Empresas y ofertas ficticias · No envía datos a ningún servidor</div>`;
+            document.querySelectorAll('[data-apply]').forEach(b => b.addEventListener('click', () => notify('Solicitud simulada: no se envía ninguna candidatura.')));
+            document.querySelectorAll('[data-save]').forEach(b => b.addEventListener('click', () => { j.save = !j.save; renderList(); renderDetail(j); notify(j.save ? 'Oferta guardada en esta sesión de demostración.' : 'Oferta quitada de guardados.') }));
+            document.querySelectorAll('[data-msg]').forEach(b => b.addEventListener('click', e => { e.preventDefault(); notify(b.dataset.msg) }));
+            document.querySelectorAll('[data-follow]').forEach(b => b.addEventListener('click', () => { b.textContent = b.textContent.includes('Seguir') ? '✓ Siguiendo' : '＋ Seguir'; notify('Seguimiento simulado.') }))
+        }
+        document.querySelectorAll('[data-filter]').forEach(b => b.addEventListener('click', () => { b.classList.toggle('active'); notify('Filtro de demostración: ' + b.dataset.filter) }));
+        document.querySelectorAll('[data-msg]').forEach(b => b.addEventListener('click', e => { e.preventDefault(); notify(b.dataset.msg) }));
+        document.getElementById('search').addEventListener('keydown', e => { if (e.key === 'Enter') { const q = e.target.value.toLowerCase().trim(); const found = jobs.find(j => (j.title + ' ' + j.company + ' ' + j.location).toLowerCase().includes(q)); if (found) { selectedId = found.id; renderList(); renderDetail(found) } else notify(q ? 'No hay coincidencias en las ofertas ficticias.' : 'Escribe un puesto o tecnología para buscar.') } });
+        renderList(); renderDetail(jobs[0]);
+    </script>
+</body>
+
+</html>
