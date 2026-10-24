@@ -2,19 +2,24 @@ import json
 import os
 from google import genai
 from google.genai import types
+from mistralai.client import Mistral
 
 
 def arrancar_ia():
-    """Inicializa el cliente de Google Gemini."""
-    api_key = os.getenv("GEMINI_API_KEY")
+    """Inicializa el cliente de Mistral."""
+
+    api_key = (os.getenv("MISTRAL_KEY"))
 
     if not api_key:
-        raise ValueError("No se ha configurado GEMINI_API_KEY.")
+        raise ValueError(
+            "Configura MISTRAL_API_KEY o MISTRAL_KEY en .env"
+        )
 
-    client = genai.Client(api_key=api_key)
+    client = Mistral(api_key=api_key)
 
-    print("IA de Google inicializada.", flush=True)
+    print("IA de Mistral inicializada.", flush=True)
     return client
+
 
 
 
@@ -81,41 +86,90 @@ def analizar_pagina(client, page, perfil):
 
 
 
+
 def elegir_oferta(client, ofertas, perfil):
+    """Selecciona la oferta que mejor encaja con el perfil."""
+
     if not ofertas:
         return None
 
     instrucciones = f"""
-        Eres un asistente de búsqueda de empleo.
+Eres un asistente especializado en búsqueda de empleo.
 
-        PERFIL:
-        {perfil}
+PERFIL DEL CANDIDATO:
+{perfil}
 
-        OFERTAS DISPONIBLES:
-        {json.dumps(ofertas, ensure_ascii=False)}
+OFERTAS DISPONIBLES:
+{json.dumps(ofertas, ensure_ascii=False)}
 
-        Selecciona la oferta más adecuada según el perfil.
-        No inventes información que no aparezca en los datos.
+Compara las ofertas con el perfil y selecciona la que mejor encaje.
 
-        Devuelve JSON con esta estructura:
-        {{
-          "indice": 0,
-          "titulo": "Título exacto de la oferta",
-          "motivo": "Por qué encaja con el perfil"
-        }}
+Prioriza:
+- Software industrial e integración OT/IT.
+- Desarrollo backend y aplicaciones empresariales.
+- Python, PHP, C#/.NET y Java.
+- Bases de datos, APIs y automatización de procesos.
+- Datos, Power BI e IA aplicada.
 
-        El índice debe corresponder al campo indice de una oferta.
-        Si ninguna encaja razonablemente, devuelve indice -1.
-    """
+No inventes requisitos ni información que no aparezca en
+las ofertas. Solo conoces título, empresa y ubicación.
 
-    respuesta = client.models.generate_content(
-        model=os.getenv("GEMINI_MODEL", "gemini-3.8-flash"),
-        contents=instrucciones,
-        config={
-            "response_mime_type": "application/json"
-        },
+Devuelve únicamente un objeto JSON con esta estructura:
+{{
+  "indice": 0,
+  "titulo": "Título exacto de la oferta",
+  "motivo": "Por qué encaja con el perfil"
+}}
+
+El índice debe corresponder al campo "indice" de una oferta.
+Si ninguna encaja razonablemente, devuelve:
+{{
+  "indice": -1,
+  "titulo": "",
+  "motivo": "Por qué ninguna oferta encaja"
+}}
+
+Responde en español.
+"""
+
+    respuesta = client.chat.complete(
+        model=os.getenv(
+            "MISTRAL_MODEL",
+            "mistral-small-latest"
+        ),
+        messages=[
+            {
+                "role": "user",
+                "content": instrucciones
+            }
+        ],
+        response_format={"type": "json_object"},
+        temperature=0.2
     )
 
-    decision = json.loads(respuesta.text)
-    print("Oferta elegida por Gemini:", decision, flush=True)
+    contenido = respuesta.choices[0].message.content
+
+    if not isinstance(contenido, str) or not contenido.strip():
+        raise ValueError("Mistral ha devuelto una respuesta vacía.")
+
+    decision = json.loads(contenido)
+
+    if not isinstance(decision, dict):
+        raise ValueError("La respuesta no es un objeto JSON.")
+
+    indice = decision.get("indice")
+    indices_validos = {
+        oferta["indice"] for oferta in ofertas
+    }
+
+    if (
+        not isinstance(indice, int)
+        or isinstance(indice, bool)
+        or (indice != -1 and indice not in indices_validos)
+    ):
+        raise ValueError(
+            f"Índice de oferta no válido: {indice!r}"
+        )
+
+    print("Oferta elegida por Mistral:", decision, flush=True)
     return decision
