@@ -49,8 +49,7 @@ def main():
             ofertas = extraer_ofertas(page)
             print(ofertas)
             time.sleep(11)
-            ofertas = extraer_ofertas(page)
-            print(ofertas)
+ 
             
             notificar("", str(ofertas))
 
