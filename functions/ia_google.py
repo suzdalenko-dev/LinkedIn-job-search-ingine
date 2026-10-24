@@ -86,15 +86,17 @@ def analizar_pagina(client, page, perfil):
 
 
 
-
 def elegir_oferta(client, ofertas, perfil):
-    """Selecciona la oferta que mejor encaja con el perfil."""
+    """Selecciona y ordena las tres ofertas que mejor encajan."""
 
     if not ofertas:
-        return None
+        return {
+            "total_ofertas_analizadas": 0,
+            "seleccionadas": []
+        }
 
     instrucciones = f"""
-Eres un asistente especializado en búsqueda de empleo.
+Eres un especialista en selección de ofertas de empleo para un candidato.
 
 PERFIL DEL CANDIDATO:
 {perfil}
@@ -102,31 +104,42 @@ PERFIL DEL CANDIDATO:
 OFERTAS DISPONIBLES:
 {json.dumps(ofertas, ensure_ascii=False)}
 
-Compara las ofertas con el perfil y selecciona la que mejor encaje.
+OBJETIVO:
+Selecciona las 3 ofertas que mejor encajan con el perfil.
+Si hay menos de 3 ofertas disponibles, selecciona todas las disponibles.
 
-Prioriza:
-- Software industrial e integración OT/IT.
-- Desarrollo backend y aplicaciones empresariales.
-- Python, PHP, C#/.NET y Java.
-- Bases de datos, APIs y automatización de procesos.
-- Datos, Power BI e IA aplicada.
+CRITERIOS DE VALORACIÓN:
+1. Software industrial, automatización e integración OT/IT.
+2. Desarrollo backend y aplicaciones empresariales.
+3. Python, PHP, C#/.NET, Java y desarrollo de APIs.
+4. Bases de datos, integraciones y automatización de procesos.
+5. Power BI, análisis de datos e IA aplicada.
+6. Compatibilidad general con la experiencia profesional del candidato.
 
-No inventes requisitos ni información que no aparezca en
-las ofertas. Solo conoces título, empresa y ubicación.
+INSTRUCCIONES:
+- Ordena las ofertas de mayor a menor coincidencia.
+- Asigna a cada una una puntuación de 0 a 100.
+- Explica brevemente por qué encaja con el perfil.
+- Utiliza únicamente información disponible en las ofertas.
+- No inventes requisitos, salarios ni responsabilidades.
+- Cada índice debe corresponder al campo "indice" de una oferta.
+- No repitas ninguna oferta.
+- Devuelve exactamente 3 ofertas distintas si hay 3 o más disponibles.
+- La primera debe ser la mejor coincidencia.
 
-Devuelve únicamente un objeto JSON con esta estructura:
+Devuelve exclusivamente JSON válido con esta estructura:
+
 {{
-  "indice": 0,
-  "titulo": "Título exacto de la oferta",
-  "motivo": "Por qué encaja con el perfil"
-}}
-
-El índice debe corresponder al campo "indice" de una oferta.
-Si ninguna encaja razonablemente, devuelve:
-{{
-  "indice": -1,
-  "titulo": "",
-  "motivo": "Por qué ninguna oferta encaja"
+  "seleccionadas": [
+    {{
+      "indice": 0,
+      "puntuacion": 95,
+      "titulo": "Título exacto",
+      "empresa": "Empresa exacta",
+      "ubicacion": "Ubicación exacta",
+      "motivo": "Explicación de la coincidencia"
+    }}
+  ]
 }}
 
 Responde en español.
@@ -135,38 +148,91 @@ Responde en español.
     respuesta = client.chat.complete(
         model=os.getenv("MISTRAL_MODEL", "ministral-14b-2512"),
         messages=[
-        {
-            "role": "user",
-            "content": instrucciones
-        }
-    ],
-    response_format={"type": "json_object"},
-    temperature=0.2
-)
+            {
+                "role": "user",
+                "content": instrucciones
+            }
+        ],
+        response_format={"type": "json_object"},
+        temperature=0.2,
+        max_tokens=1500
+    )
 
     contenido = respuesta.choices[0].message.content
 
     if not isinstance(contenido, str) or not contenido.strip():
         raise ValueError("Mistral ha devuelto una respuesta vacía.")
 
-    decision = json.loads(contenido)
+    resultado = json.loads(contenido)
 
-    if not isinstance(decision, dict):
+    if not isinstance(resultado, dict):
         raise ValueError("La respuesta no es un objeto JSON.")
 
-    indice = decision.get("indice")
-    indices_validos = {
-        oferta["indice"] for oferta in ofertas
+    seleccionadas_ia = resultado.get("seleccionadas")
+
+    if not isinstance(seleccionadas_ia, list):
+        raise ValueError("La respuesta no contiene la lista seleccionadas.")
+
+    # Usar los datos originales para validar los índices y los títulos.
+    ofertas_por_indice = {
+        oferta["indice"]: oferta
+        for oferta in ofertas
     }
 
-    if (
-        not isinstance(indice, int)
-        or isinstance(indice, bool)
-        or (indice != -1 and indice not in indices_validos)
-    ):
+    seleccionadas = []
+    indices_usados = set()
+
+    for candidata in seleccionadas_ia:
+        if not isinstance(candidata, dict):
+            continue
+
+        indice = candidata.get("indice")
+
+        if (
+            not isinstance(indice, int)
+            or isinstance(indice, bool)
+            or indice not in ofertas_por_indice
+            or indice in indices_usados
+        ):
+            continue
+
+        oferta_original = ofertas_por_indice[indice]
+
+        try:
+            puntuacion = float(candidata.get("puntuacion", 0))
+        except (TypeError, ValueError):
+            puntuacion = 0
+
+        puntuacion = max(0, min(100, puntuacion))
+
+        seleccionadas.append({
+            "indice": indice,
+            "puntuacion": puntuacion,
+            "titulo": oferta_original["titulo"],
+            "empresa": oferta_original["empresa"],
+            "ubicacion": oferta_original["ubicacion"],
+            "motivo": str(candidata.get("motivo", ""))
+        })
+
+        indices_usados.add(indice)
+
+        if len(seleccionadas) == 3:
+            break
+
+    if len(seleccionadas) != min(3, len(ofertas)):
         raise ValueError(
-            f"Índice de oferta no válido: {indice!r}"
+            f"Mistral ha seleccionado {len(seleccionadas)} ofertas válidas; "
+            f"se esperaban {min(3, len(ofertas))}. "
+            "Revisa la respuesta de la IA."
         )
 
-    print("Oferta elegida por Mistral:", decision, flush=True)
+    decision = {
+        "total_ofertas_analizadas": len(ofertas),
+        "seleccionadas": seleccionadas
+    }
+
+    print("Tres mejores ofertas:", json.dumps(
+        decision, ensure_ascii=False, indent=2
+    ), flush=True)
+
     return decision
