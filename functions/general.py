@@ -1,3 +1,4 @@
+import json
 import time
 
 from winotify import Notification
@@ -216,3 +217,11 @@ def notificar(titulo, mensaje):
         duration="short"
     )
     aviso.show()
+
+
+
+
+
+def save_json_data(data, filename):
+    with open(filename, "w", encoding="utf-8") as file:
+        json.dump(data, file, ensure_ascii=False, indent=2)

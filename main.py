@@ -2,7 +2,7 @@ import time
 from dotenv import load_dotenv
 from playwright.sync_api import sync_playwright
 from functions.a_open_brouser import open_brouser
-from functions.general import click_text_button, extraer_ofertas, log, notificar
+from functions.general import click_text_button, extraer_ofertas, log, notificar, save_json_data
 from winotify import Notification
 from functions.ia_google import analizar_pagina, arrancar_ia, elegir_oferta
 
@@ -45,6 +45,7 @@ def main():
             time.sleep(1)
 
             ofertas = extraer_ofertas(page)
+            save_json_data(ofertas, 'ofertas.json')
             print(ofertas)
             # write ofertas en JSON file en el proyecto
             time.sleep(1)
@@ -53,7 +54,8 @@ def main():
             notificar("", str(ofertas))
 
             decision = elegir_oferta(ia, ofertas, PERFIL)
-            # write ofertas en JSON file en el proyecto
+            save_json_data(decision, 'decision.json')
+
             print(print(decision))
 
             while True:
