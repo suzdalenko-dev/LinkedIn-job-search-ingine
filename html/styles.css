@@ -1483,3 +1483,32 @@ footer {
         font-size: 22px;
     }
 }
+
+/* Cabecera exclusiva de la página de acceso */
+.login-topbar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 56px;
+    padding: 0 24px;
+}
+
+.login-topbar-inner {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    max-width: 1128px;
+    margin: 0 auto;
+}
+
+.login-topbar .brand {
+    font-size: 26px;
+}
+
+@media (max-width: 520px) {
+    .login-topbar {
+        height: 56px;
+        padding: 0 16px;
+    }
+}
