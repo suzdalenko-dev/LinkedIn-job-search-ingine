@@ -133,7 +133,7 @@ Responde en español.
 """
 
     respuesta = client.chat.complete(
-        model=os.getenv("MISTRAL_MODEL", "mistral-small-2603"),
+        model=os.getenv("MISTRAL_MODEL", "ministral-14b-2512"),
         messages=[
         {
             "role": "user",

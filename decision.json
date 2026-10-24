@@ -1,0 +1,24 @@
+{
+  "indice": 11,
+  "titulo": "Ingeniero/a IT/OT de Manufactura",
+  "motivo": {
+    "encaje_tecnico": [
+      "El puesto de **Ingeniero/a IT/OT de Manufactura** es el que mejor se alinea con el perfil, ya que aborda directamente la integración **OT/IT** (Operational Technology / Information Technology), clave en el perfil del candidato.",
+      "El enfoque en **manufactura** y **aplicaciones industriales** (como el desarrollo de OEE, ritmos de producción y KPIs en tiempo real) es un área de experiencia explícita en el perfil.",
+      "Aunque no se detallan tecnologías específicas en la oferta, el rol implica **integración de sistemas industriales** (PLCs, protocolos como OPC UA/MQTT, etc.), que son parte central del perfil del candidato."
+    ],
+    "experiencia_relevante": [
+      "El candidato tiene experiencia en **desarrollo end-to-end de aplicaciones industriales** (desde la capa OT hasta la visualización de datos), lo que encaja con un rol que requiere gestión de **flujos de datos entre sistemas industriales y TI**.",
+      "Mención explícita en el perfil a **implantes de DECA** (Digitalización y Eficiencia en la Cadena Alimentaria) y al **PERTE Agroalimentario**, sectores donde la integración IT/OT es crítica y alineada con manufactura avanzada.",
+      "El uso de **Python, C#/.NET y Java** (tecnologías mencionadas en el perfil) es común en entornos industriales para desarrollo de backend y automatización, aunque la oferta no los especifique, son habilidades transferibles a este contexto."
+    ],
+    "contexto_industrial": [
+      "La ubicación en **Bilbao y alrededores** (zona con fuerte presencia industrial y de manufactura avanzada) es un plus, alineado con el enfoque del candidato en **Industria 4.0**.",
+      "El perfil destaca la capacidad de trabajar con **datos en tiempo real y KPIs**, algo esencial en roles de manufactura donde la monitorización de procesos es clave."
+    ],
+    "limitaciones_menores": [
+      "La oferta no especifica tecnologías concretas (como Python, PHP o Java), pero el rol **IT/OT** es lo suficientemente amplio como para asumir que se requieren habilidades de integración y desarrollo backend, áreas donde el candidato tiene experiencia sólida.",
+      "No se menciona **Power BI o IA aplicada**, pero el enfoque en manufactura y datos industriales permite inferir que podrían ser parte del ecosistema de herramientas utilizado."
+    ]
+  }
+}

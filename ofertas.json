@@ -7,21 +7,21 @@
   },
   {
     "indice": 1,
-    "titulo": "Analista Funcional - Equipo Java -",
-    "empresa": "RDT",
-    "ubicacion": "Guipúzcoa (Híbrido)"
-  },
-  {
-    "indice": 2,
     "titulo": "Ingeniero/a aplicaciones",
     "empresa": "Temporing",
     "ubicacion": "Zaldibar (Presencial)"
   },
   {
-    "indice": 3,
+    "indice": 2,
     "titulo": "Senior .NET Developer // Software Architect  (Empleo verificado)",
     "empresa": "Capitole",
     "ubicacion": "Bilbao (Híbrido)"
+  },
+  {
+    "indice": 3,
+    "titulo": "Ingeniero/a de Desarrollo HW: Electrónica de Potencia (Empleo verificado)",
+    "empresa": "SEG Automotive",
+    "ubicacion": "Santander y alrededores (Presencial)"
   },
   {
     "indice": 4,
@@ -31,9 +31,9 @@
   },
   {
     "indice": 5,
-    "titulo": "Especialista SQL Server (Transact-SQL) (Empleo verificado)",
-    "empresa": "Capitole",
-    "ubicacion": "España (En remoto)"
+    "titulo": "Analista Funcional - Equipo Java -",
+    "empresa": "RDT",
+    "ubicacion": "Guipúzcoa (Híbrido)"
   },
   {
     "indice": 6,
@@ -43,21 +43,21 @@
   },
   {
     "indice": 7,
-    "titulo": "Cloud Software Engineer (Empleo verificado)",
+    "titulo": "Especialista SQL Server (Transact-SQL) (Empleo verificado)",
+    "empresa": "Capitole",
+    "ubicacion": "España (En remoto)"
+  },
+  {
+    "indice": 8,
+    "titulo": "Cloud Software Engineer",
     "empresa": "Hubbell Incorporated",
     "ubicacion": "Bilbao (Híbrido)"
   },
   {
-    "indice": 8,
+    "indice": 9,
     "titulo": "Analista Programador/a Cobol (Remoto)",
     "empresa": "Exportadora Data Base S.A.",
     "ubicacion": "España (En remoto)"
-  },
-  {
-    "indice": 9,
-    "titulo": "Ingeniero de firmware (Empleo verificado)",
-    "empresa": "Hays",
-    "ubicacion": "Autonomía de Cantabria, España (Híbrido)"
   },
   {
     "indice": 10,
@@ -67,62 +67,62 @@
   },
   {
     "indice": 11,
-    "titulo": "Backend Developer Analyst | SPARK/SCALA | 100% Remote",
-    "empresa": "UST España & Latam",
-    "ubicacion": "España (En remoto)"
-  },
-  {
-    "indice": 12,
-    "titulo": "Desarrollador/a Java + Certificado ASO o APX Remoto",
-    "empresa": "Plexus Tech",
-    "ubicacion": "España (En remoto)"
-  },
-  {
-    "indice": 13,
-    "titulo": "Analista Programador/a PL1 – 100% Remoto",
-    "empresa": "PSS Tecnologías de la Información",
-    "ubicacion": "España (En remoto)"
-  },
-  {
-    "indice": 14,
-    "titulo": "Senior Data Engineer",
-    "empresa": "BCNC GROUP",
-    "ubicacion": "España (En remoto)"
-  },
-  {
-    "indice": 15,
-    "titulo": "Technical lead y desarrollador",
-    "empresa": "FERCHAU Spain",
-    "ubicacion": "España (En remoto)"
-  },
-  {
-    "indice": 16,
-    "titulo": "🤖 Programadores/as SAP ABAP, SAP CRM y SAP IS-U o exp sector utilities | 100% remoto",
-    "empresa": "keapps",
-    "ubicacion": "España (En remoto)"
-  },
-  {
-    "indice": 17,
-    "titulo": "Senior Backend Java/ Remoto 100%",
-    "empresa": "Grupo TECDATA Engineering",
-    "ubicacion": "España (En remoto)"
-  },
-  {
-    "indice": 18,
     "titulo": "Ingeniero/a IT/OT de Manufactura",
     "empresa": "MK Development Consulting",
     "ubicacion": "Bilbao y alrededores (Presencial)"
   },
   {
-    "indice": 19,
+    "indice": 12,
+    "titulo": "Backend Developer Analyst | SPARK/SCALA | 100% Remote",
+    "empresa": "UST España & Latam",
+    "ubicacion": "España (En remoto)"
+  },
+  {
+    "indice": 13,
+    "titulo": "Desarrollador/a Java + Certificado ASO o APX Remoto",
+    "empresa": "Plexus Tech",
+    "ubicacion": "España (En remoto)"
+  },
+  {
+    "indice": 14,
+    "titulo": "Ingeniero de firmware",
+    "empresa": "Hays",
+    "ubicacion": "Autonomía de Cantabria, España (Híbrido)"
+  },
+  {
+    "indice": 15,
+    "titulo": "Analista Programador/a PL1 – 100% Remoto",
+    "empresa": "PSS Tecnologías de la Información",
+    "ubicacion": "España (En remoto)"
+  },
+  {
+    "indice": 16,
     "titulo": "Java microservicios | Teletrabajo",
     "empresa": "ALTEN Spain",
     "ubicacion": "España (En remoto)"
   },
   {
-    "indice": 20,
+    "indice": 17,
+    "titulo": "Senior Data Engineer",
+    "empresa": "BCNC GROUP",
+    "ubicacion": "España (En remoto)"
+  },
+  {
+    "indice": 18,
+    "titulo": "Technical lead y desarrollador",
+    "empresa": "FERCHAU Spain",
+    "ubicacion": "España (En remoto)"
+  },
+  {
+    "indice": 19,
     "titulo": "Desarrollador SAP ABAP S/4HANA (100% Remoto) (h/m/x)",
     "empresa": "Experis España",
+    "ubicacion": "España (En remoto)"
+  },
+  {
+    "indice": 20,
+    "titulo": "Senior Backend Java/ Remoto 100%",
+    "empresa": "Grupo TECDATA Engineering",
     "ubicacion": "España (En remoto)"
   },
   {
@@ -133,14 +133,14 @@
   },
   {
     "indice": 22,
-    "titulo": "Data Engineer - Databricks",
-    "empresa": "PIXIE",
+    "titulo": "AI Developer",
+    "empresa": "300 DEC",
     "ubicacion": "España (En remoto)"
   },
   {
     "indice": 23,
-    "titulo": "AI Developer",
-    "empresa": "300 DEC",
+    "titulo": "Programador/a Abap",
+    "empresa": "SOLTEL Group",
     "ubicacion": "España (En remoto)"
   },
   {
