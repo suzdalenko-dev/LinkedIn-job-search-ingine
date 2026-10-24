@@ -42,19 +42,19 @@ def main():
             text = click_text_button(page, "Última semana")
             text = click_text_button(page, "Mostrar resultados")
             text = click_text_button(page, "Solicitud sencilla")
-            time.sleep(11)
-
-            # decision = analizar_pagina(ia, page, PERFIL)
+            time.sleep(1)
 
             ofertas = extraer_ofertas(page)
             print(ofertas)
-            time.sleep(11)
+            # write ofertas en JSON file en el proyecto
+            time.sleep(1)
  
             
             notificar("", str(ofertas))
 
-            # decision = elegir_oferta(ia, ofertas, PERFIL)
-            # print(print(decision))
+            decision = elegir_oferta(ia, ofertas, PERFIL)
+            # write ofertas en JSON file en el proyecto
+            print(print(decision))
 
             while True:
                 page.wait_for_timeout(1000)
